@@ -4,6 +4,4 @@ __pycache__/
 word2vec.model
 .env
 *.env
-__pycache__/
-*.pyc
 gcm-diagnose.log
