@@ -1,73 +1,77 @@
 import os
-import json
 from dotenv import load_dotenv
 from google import genai
-from google.genai import types
 
-# Load API Key
+from prompt_builder import PromptBuilder
+
+
+# Load environment variables
 load_dotenv()
 
+# Create Gemini client
 client = genai.Client(
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
-# Strict System Prompt
-system_prompt = """
-You are an AI assistant.
+# Create Prompt Builder
+builder = PromptBuilder("prompts")
 
-Rules:
-1. Return ONLY valid JSON.
-2. Do not write explanations.
-3. Do not use Markdown.
-4. Follow the schema exactly.
-5. Do not add extra keys.
-6. Do not remove required keys.
+print("=" * 50)
+print("      Prompt Engineering Demo")
+print("=" * 50)
 
-JSON Schema:
-{
-    "topic": "string",
-    "definition": "string",
-    "example": "string"
-}
-"""
+# Choose task
+print("\nAvailable Tasks:")
+print("1. summarization")
+print("2. sentiment_analysis")
+print("3. entity_extraction")
+print("4. code_generation")
+print("5. data_transformation")
+print("6. few_shot")
+print("7. persona")
+print("8. production_prompt")
 
-# User Message
-user_message = types.Content(
-    role="user",
-    parts=[
-        types.Part.from_text(
-            text="Explain tokenization."
-        )
-    ]
-)
+task = input("\nEnter task name: ").strip()
 
-# Generate Response
+# User input
+user_text = input("\nEnter your text/request:\n")
+
+# Extra input for persona prompt
+if task == "persona":
+    persona = input("Enter Persona (e.g., Cybersecurity Expert): ")
+
+    prompt = builder.build_prompt(
+        task=task,
+        persona=persona,
+        input_text=user_text
+    )
+
+# Extra input for temperature prompt
+elif task == "temperature":
+    creativity = input("Creativity Level (Low/Medium/High): ")
+
+    prompt = builder.build_prompt(
+        task=task,
+        creativity_level=creativity,
+        input_text=user_text
+    )
+
+# All other prompts
+else:
+    prompt = builder.build_prompt(
+        task=task,
+        input_text=user_text
+    )
+
+# Send prompt to Gemini
 response = client.models.generate_content(
     model="gemini-flash-latest",
-    contents=[user_message],
-    config=types.GenerateContentConfig(
-        system_instruction=system_prompt
-    )
+    contents=prompt
 )
 
-response_text = response.text.strip()
+# Display response
+print("\n" + "=" * 50)
+print("AI Response")
+print("=" * 50)
 
-print("\nRaw Response:\n")
-print(response_text)
-
-try:
-    data = json.loads(response_text)
-
-    required_keys = {"topic", "definition", "example"}
-
-    if set(data.keys()) != required_keys:
-        raise ValueError("JSON schema does not match.")
-
-    print("\n Valid JSON")
-    print(json.dumps(data, indent=4))
-
-except json.JSONDecodeError:
-    print("\n Invalid JSON returned by the model.")
-
-except ValueError as e:
-    print(f"\n {e}")
+print(response.text)
