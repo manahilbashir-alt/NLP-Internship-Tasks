@@ -1,0 +1,20 @@
+.message {
+    padding: 10px 14px;
+    margin: 10px;
+    border-radius: 12px;
+    max-width: 70%;
+}
+
+.user {
+    margin-left: auto;
+    background-color: #2563eb;
+    color: white;
+    text-align: right;
+}
+
+.assistant {
+    margin-right: auto;
+    background-color: #e5e7eb;
+    color: #111827;
+    text-align: left;
+}

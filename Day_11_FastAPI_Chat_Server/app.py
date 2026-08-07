@@ -1,20 +1,35 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 from models import (
     ChatRequest,
     ChatResponse,
     SessionInfo,
     ErrorResponse,
 )
+
 import logging
 import time
 from datetime import datetime
 
+
 app = FastAPI(title="FastAPI Chat Server")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 SYSTEM_PROMPT = "You are a helpful AI assistant."
 
 MODEL_NAME = "demo-model"
+
 chat_sessions = {}
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(message)s",
@@ -42,12 +57,14 @@ def chat(request: ChatRequest):
 
     try:
 
+        # Validate message
         if request.message.strip() == "":
             raise HTTPException(
                 status_code=400,
                 detail="Message cannot be empty."
             )
 
+        # Create session if it doesn't exist
         if request.session_id not in chat_sessions:
 
             chat_sessions[request.session_id] = [
@@ -57,8 +74,7 @@ def chat(request: ChatRequest):
                 }
             ]
 
-        # Save User Message
-
+        # Save user message
         chat_sessions[request.session_id].append(
             {
                 "role": "user",
@@ -66,11 +82,10 @@ def chat(request: ChatRequest):
             }
         )
 
-        # Dummy AI Response
+        #  AI response
         ai_response = f"You said: {request.message}"
 
-        # Save AI Response
-
+        # Save AI response
         chat_sessions[request.session_id].append(
             {
                 "role": "assistant",
@@ -78,13 +93,19 @@ def chat(request: ChatRequest):
             }
         )
 
+        # Calculate latency
         latency = round(
             (time.perf_counter() - start) * 1000,
             2
         )
 
-        token_usage = len(request.message.split()) + len(ai_response.split())
+        # Calculate simple token usage
+        token_usage = (
+            len(request.message.split())
+            + len(ai_response.split())
+        )
 
+        # Logging
         logger.info(
             {
                 "timestamp": datetime.now().isoformat(),
@@ -114,6 +135,7 @@ def chat(request: ChatRequest):
                 "detail": str(e),
             },
         )
+
 @app.get(
     "/api/sessions",
     response_model=list[SessionInfo],
@@ -132,6 +154,7 @@ def list_sessions():
         )
 
     return sessions
+
 @app.get("/api/sessions/{session_id}")
 def get_session(session_id: str):
 
