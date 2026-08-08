@@ -1,20 +1,193 @@
-.message {
-    padding: 10px 14px;
-    margin: 10px;
-    border-radius: 12px;
-    max-width: 70%;
+.message-row {
+    display: flex;
+    gap: 13px;
+    width: 100%;
+    margin-bottom: 28px;
+    animation: messageIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative;
+    z-index: 1;
 }
 
-.user {
-    margin-left: auto;
-    background-color: #2563eb;
-    color: white;
+.message-row.user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+
+    background: linear-gradient(140deg, #B7A6F0, #9FE8D8);
+    color: #4A3F5C;
+
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 4px 12px rgba(183, 166, 240, 0.3);
+}
+
+.message-row.user .message-avatar {
+    background: linear-gradient(140deg, #FFD9C2, #FFB8D1);
+    color: #5B3A44;
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+        0 4px 12px rgba(255, 184, 209, 0.4);
+}
+
+.message-body {
+    max-width: min(680px, 82%);
+}
+
+.message-row.user .message-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.message-label {
+    margin-bottom: 5px;
+    color: #A99BC2;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+
+.message-row.user .message-label {
     text-align: right;
 }
 
-.assistant {
-    margin-right: auto;
-    background-color: #e5e7eb;
-    color: #111827;
-    text-align: left;
+.message-text {
+    padding: 13px 17px;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.65;
+    white-space: pre-wrap;
+    word-break: break-word;
+
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.message-row.assistant .message-text {
+    background: #FFFFFF;
+    border: 1px solid rgba(183, 166, 240, 0.2);
+    border-radius: 4px 13px 13px 13px;
+
+    color: #4A3F5C;
+
+    box-shadow: 0 4px 14px rgba(183, 166, 240, 0.12);
+}
+
+.message-row.assistant:hover .message-text {
+    border-color: rgba(183, 166, 240, 0.4);
+    box-shadow: 0 6px 20px rgba(183, 166, 240, 0.2);
+}
+
+.message-row.user .message-text {
+    background: linear-gradient(155deg, #FFD9C2, #FFB8D1);
+    color: #5B3A44;
+    border-radius: 13px 4px 13px 13px;
+
+    box-shadow: 0 4px 16px rgba(255, 184, 209, 0.35);
+}
+
+.message-row.user:hover .message-text {
+    box-shadow: 0 6px 22px rgba(255, 184, 209, 0.45);
+}
+
+.message-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 7px;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.message-row:hover .message-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.message-row.user .message-actions {
+    justify-content: flex-end;
+}
+
+.message-action {
+    padding: 4px 9px;
+    border: 1px solid rgba(183, 166, 240, 0.25);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.6);
+    color: #7A6E92;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.01em;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.message-action:hover {
+    background: rgba(183, 166, 240, 0.18);
+    border-color: rgba(183, 166, 240, 0.5);
+    color: #4A3F5C;
+    transform: translateY(-1px);
+}
+
+.message-action:active {
+    transform: translateY(0);
+}
+
+@keyframes messageIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 650px) {
+    .message-body {
+        max-width: 88%;
+    }
+
+    .message-text {
+        padding: 11px 13px;
+        font-size: 13px;
+    }
+
+    .message-row {
+        gap: 9px;
+        margin-bottom: 22px;
+    }
+
+    .message-avatar {
+        width: 29px;
+        height: 29px;
+    }
+
+    .message-actions {
+        opacity: 1;
+        transform: none;
+    }
 }
