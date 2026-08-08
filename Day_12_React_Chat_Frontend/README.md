@@ -1,108 +1,383 @@
 # Day 12 — React Chat Frontend
 
-A React-based chat frontend developed as part of the NLP Internship.  
-The frontend is connected to the FastAPI Chat Server developed in Day 11.
+A modern React-based chat frontend built as part of the **NLP Internship**. This project provides a user-friendly chat interface that connects with the FastAPI backend developed in Day 11.
 
-## Overview
+The application supports chat messaging, multiple chat sessions, session management, message history, and a live typing indicator.
 
-This project demonstrates how a React frontend communicates with a FastAPI backend through a REST API.
+---
 
-### Features
+## 📌 Project Overview
 
-- React + Vite frontend
-- Chat message interface
-- User and assistant message bubbles
-- Message input and send button
-- React state management using `useState`
-- FastAPI backend integration
-- Fetch API for sending requests
-- Typing indicator
-- Responsive and modern UI
+The goal of this project is to build a functional frontend for an AI/chat application using **React** and integrate it with a **FastAPI REST API** backend.
 
-## Technologies Used
+The React application communicates with the backend through HTTP requests and provides an interactive chat experience.
 
-- React
-- Vite
-- JavaScript
-- CSS
-- FastAPI
-- REST API
-- Fetch API
-
-## Project Structure
+### Architecture
 
 ```text
-day12-react-chat-frontend/
+React Frontend
+      │
+      │ HTTP Requests
+      ▼
+FastAPI Backend
+      │
+      │
+      ▼
+Gemini API
+```
+
+---
+
+## ✨ Features
+
+* 💬 Real-time-style chat interface
+* 🗂️ Multiple chat sessions
+* ➕ Create a new chat
+* 🔄 Switch between conversations
+* 🗑️ Manage chat sessions
+* 💾 Persistent frontend state using local storage
+* ⌨️ Typing/loading indicator
+* 📜 Message history
+* 🔗 FastAPI backend integration
+* 🤖 Gemini-powered responses
+* 📱 Responsive and clean user interface
+* 🔐 Environment variables for API configuration
+
+---
+
+## 🛠️ Technologies Used
+
+### Frontend
+
+* React
+* JavaScript
+* CSS
+* Vite
+* React Hooks
+
+### Backend
+
+* Python
+* FastAPI
+* Pydantic
+* Uvicorn
+
+### AI
+
+* Google Gemini API
+
+### Development Tools
+
+* Visual Studio Code
+* Git
+* GitHub
+* npm
+
+---
+
+## 📁 Project Structure
+
+```text
+Day_12_React_Chat_Frontend/
 │
 ├── src/
 │   ├── components/
+│   │   ├── Sidebar.jsx
 │   │   ├── ChatMessage.jsx
-│   │   ├── ChatMessage.css
-│   │   ├── MessageInput.jsx
-│   │   └── MessageInput.css
+│   │   └── MessageInput.jsx
 │   │
 │   ├── App.jsx
-│   ├── App.css
-│   ├── index.css
-│   └── main.jsx
+│   ├── main.jsx
+│   └── ...
 │
 ├── public/
+│
+├── .env
+├── .gitignore
 ├── package.json
 ├── package-lock.json
 ├── vite.config.js
 └── README.md
-How to Run
-1. Install Dependencies
+```
+
+> The exact files may vary depending on the final project structure.
+
+---
+
+## 🔐 Environment Variables
+
+The project uses environment variables for sensitive configuration such as the Gemini API key.
+
+Create a `.env` file in the project root:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+**Never upload your `.env` file or API keys to GitHub.**
+
+Make sure `.gitignore` contains:
+
+```gitignore
+.env
+.env.*
+node_modules/
+dist/
+```
+
+---
+
+## 🚀 Installation
+
+### 1. Clone the repository
+
+```bash
+git clone YOUR_GITHUB_REPOSITORY_URL
+```
+
+### 2. Navigate to the project
+
+```bash
+cd Day_12_React_Chat_Frontend
+```
+
+### 3. Install dependencies
+
+```bash
 npm install
-2. Start the FastAPI Backend
+```
 
-From the Day 11 FastAPI project:
+### 4. Configure environment variables
 
-python -m uvicorn app:app --reload
+Create the `.env` file and add your Gemini API key.
 
-Backend:
+```env
+GEMINI_API_KEY=your_api_key_here
+```
 
-http://127.0.0.1:8000
-3. Start the React Frontend
+---
 
-From the Day 12 project:
+## ▶️ Running the Frontend
 
+Start the React development server:
+
+```bash
 npm run dev
+```
 
-Frontend:
+Vite will provide a local development URL, usually:
 
+```text
 http://localhost:5173
+```
 
-Both the frontend and backend should be running at the same time.
+Open the URL in your browser.
 
-API Integration
+---
 
-The frontend sends messages to:
+## 🔗 Backend Integration
 
+The frontend communicates with the FastAPI backend developed in **Day 11 — FastAPI Chat Server**.
+
+The backend provides endpoints such as:
+
+```text
 POST /api/chat
+GET  /api/sessions
+```
+
+### Send a message
 
 Example request:
 
+```json
 {
-  "session_id": "react-demo-session",
+  "session_id": "session_1",
   "message": "Hello"
 }
+```
 
-The current backend returns a mock response for testing:
+Example response:
 
+```json
 {
-  "session_id": "react-demo-session",
   "response": "You said: Hello"
 }
+```
 
-A real AI/LLM can be connected to the backend in the future.
+The React frontend sends the user's message to the backend and displays the returned response in the chat interface.
 
-What I Learned
-React components and JSX
-Props and useState
-Event handling
-Fetch API
-REST API communication
-Connecting React with FastAPI
-CSS styling and animations
-Building a responsive chat interface
+---
+
+## 🗂️ Multi-Session Chat
+
+The application supports multiple conversations.
+
+Users can:
+
+1. Create a new chat session.
+2. Select an existing conversation.
+3. Send messages within the selected session.
+4. Maintain separate conversation histories.
+5. Switch between different sessions.
+
+This allows the application to behave more like a complete chat application rather than a single-message interface.
+
+---
+
+## 💾 Local Storage
+
+The frontend uses browser local storage to persist relevant chat/session information.
+
+This helps preserve the user's conversations when the page is refreshed during development.
+
+---
+
+## ⌨️ Typing Indicator
+
+While waiting for a response from the backend, the interface displays a typing/loading indicator.
+
+This provides visual feedback to the user that the request is being processed.
+
+---
+
+## 🔄 Application Flow
+
+```text
+User enters message
+        │
+        ▼
+React MessageInput
+        │
+        ▼
+App.jsx
+        │
+        ▼
+POST /api/chat
+        │
+        ▼
+FastAPI Backend
+        │
+        ▼
+Gemini / Chat Logic
+        │
+        ▼
+Backend Response
+        │
+        ▼
+React State Update
+        │
+        ▼
+ChatMessage
+        │
+        ▼
+Response displayed
+```
+
+---
+
+## 🧪 Testing
+
+The application can be tested by:
+
+### Test 1 — Basic Chat
+
+Send:
+
+```text
+Hello
+```
+
+Expected result:
+
+The message should appear in the chat and the backend should return a response.
+
+### Test 2 — Multiple Messages
+
+Send:
+
+```text
+What is NLP?
+```
+
+Then:
+
+```text
+What are transformers?
+```
+
+The messages should appear in the correct order.
+
+### Test 3 — Multiple Sessions
+
+1. Create a new chat.
+2. Send a message.
+3. Create another chat.
+4. Send a different message.
+5. Switch between sessions.
+
+Each session should maintain its own conversation.
+
+### Test 4 — Page Refresh
+
+Refresh the browser and verify that the stored session/chat information is preserved according to the application's local-storage implementation.
+
+---
+
+## ⚠️ Security
+
+API keys and other secrets should **never** be committed to GitHub.
+
+The following files should remain private:
+
+```text
+.env
+```
+
+Use `.gitignore` to prevent accidental uploads.
+
+If an API key is accidentally exposed publicly, revoke it and generate a new one.
+
+---
+
+## 📚 Learning Outcomes
+
+Through this project, I practiced:
+
+* React component development
+* React Hooks
+* State management
+* API integration
+* REST API communication
+* Async JavaScript
+* Multi-session chat architecture
+* Local storage
+* Loading/typing states
+* Frontend and backend integration
+* Environment variable management
+* Git and GitHub workflow
+
+---
+
+## 📌 Internship Task
+
+**Internship:** NLP Internship
+**Day:** 12
+**Task:** React Chat Frontend
+
+This project builds upon the FastAPI Chat Server developed in Day 11 and demonstrates full-stack integration between a React frontend and a Python FastAPI backend.
+
+---
+
+## 👩‍💻 Author
+
+**Manahil Bashir**
+
+Computer Science Student
+FAST-NUCES
+
+---
+
+## 📄 License
+
+This project was created for educational and internship purposes.
