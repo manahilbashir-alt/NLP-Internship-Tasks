@@ -376,8 +376,5 @@ This project builds upon the FastAPI Chat Server developed in Day 11 and demonst
 Computer Science Student
 FAST-NUCES
 
----
-
-## 📄 License
 
 This project was created for educational and internship purposes.
