@@ -1,4 +1,3 @@
-@"
 name: Smart Document Backend CI
 
 on:
@@ -29,4 +28,3 @@ jobs:
 
       - name: Run tests
         run: ./mvnw test
-"@ | Set-Content .\.github\workflows\ci.yml
