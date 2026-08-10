@@ -1,0 +1,7 @@
+package smart.document.backend.repository;
+
+import smart.document.backend.entity.Document;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DocumentRepository extends JpaRepository<Document, Long> {
+}
