@@ -13,10 +13,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: Complete_Backend_Project/Spring-Backend
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
