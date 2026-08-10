@@ -48,6 +48,7 @@ public class DocumentService {
                 );
     }
 
+    @CacheEvict(value = "documents", key = "#id + '-' + #ownerEmail")
     public Document updateDocument(
             Long id,
             String title,
