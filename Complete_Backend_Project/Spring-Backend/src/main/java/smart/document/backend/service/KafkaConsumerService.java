@@ -7,10 +7,13 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumerService {
 
     @KafkaListener(
-            topics = "document-events",
+            topics = "document-topic",
             groupId = "smart-document-group"
     )
     public void consumeDocumentEvent(String message) {
-        System.out.println("Kafka Event Received: " + message);
+
+        System.out.println(
+                "Kafka Event Received: " + message
+        );
     }
 }

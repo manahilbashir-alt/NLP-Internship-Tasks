@@ -3,6 +3,8 @@ package smart.document.backend.service;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import reactor.core.publisher.Mono;
+
 @Service
 public class ExternalApiService {
 
@@ -14,12 +16,11 @@ public class ExternalApiService {
                 .build();
     }
 
-    public String getExternalPost() {
+    public Mono<String> getExternalPost() {
         return webClient
                 .get()
                 .uri("/posts/1")
                 .retrieve()
-                .bodyToMono(String.class)
-                .block();
+                .bodyToMono(String.class);
     }
 }
