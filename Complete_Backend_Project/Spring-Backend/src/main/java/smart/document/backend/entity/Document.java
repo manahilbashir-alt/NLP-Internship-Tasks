@@ -1,6 +1,8 @@
 package smart.document.backend.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "documents")
@@ -10,21 +12,25 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title is required")
+    @Size(max = 100, message = "Title must not exceed 100 characters")
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @NotBlank(message = "Content is required")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    private String status;
+    @Column(nullable = false)
+    private String ownerEmail;
 
     public Document() {
     }
 
-    public Document(String title, String content, String status) {
+    public Document(String title, String content, String ownerEmail) {
         this.title = title;
         this.content = content;
-        this.status = status;
+        this.ownerEmail = ownerEmail;
     }
 
     public Long getId() {
@@ -51,11 +57,11 @@ public class Document {
         this.content = content;
     }
 
-    public String getStatus() {
-        return status;
+    public String getOwnerEmail() {
+        return ownerEmail;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 }

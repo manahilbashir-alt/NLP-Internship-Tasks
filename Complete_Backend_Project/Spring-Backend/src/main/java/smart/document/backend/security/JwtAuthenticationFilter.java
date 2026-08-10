@@ -38,8 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String authorizationHeader =
                 request.getHeader("Authorization");
 
+        System.out.println("JWT FILTER: " + request.getMethod()
+                + " " + request.getRequestURI());
+
         if (authorizationHeader == null ||
                 !authorizationHeader.startsWith("Bearer ")) {
+
+            System.out.println("JWT FILTER: No Bearer token found");
 
             filterChain.doFilter(request, response);
             return;
@@ -50,6 +55,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
 
             String email = jwtService.extractUsername(token);
+
+            System.out.println("JWT FILTER: Email = " + email);
 
             if (email != null &&
                     SecurityContextHolder.getContext()
@@ -74,10 +81,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);
+
+                    System.out.println(
+                            "JWT FILTER: Authentication SUCCESS"
+                    );
+
+                } else {
+
+                    System.out.println(
+                            "JWT FILTER: Token INVALID"
+                    );
                 }
             }
 
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+
+            System.out.println(
+                    "JWT FILTER ERROR: " + e.getMessage()
+            );
         }
 
         filterChain.doFilter(request, response);
