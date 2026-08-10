@@ -24,7 +24,9 @@ jobs:
           cache: maven
 
       - name: Build project
+        working-directory: Spring-Backend
         run: mvn clean package -DskipTests
 
       - name: Run tests
+        working-directory: Spring-Backend
         run: mvn test
