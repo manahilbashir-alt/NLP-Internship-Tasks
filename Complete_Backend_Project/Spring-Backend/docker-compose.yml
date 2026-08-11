@@ -1,6 +1,0 @@
-services:
-  smart-document-backend:
-    build: .
-    container_name: smart-document-backend
-    ports:
-      - "8080:8080"
