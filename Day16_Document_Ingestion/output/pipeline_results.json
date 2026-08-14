@@ -1,0 +1,57 @@
+{
+  "pdf_ingestion": {
+    "source": "native.pdf",
+    "pages_pdfplumber": 56,
+    "pages_pypdf2": 56,
+    "time_pdfplumber_sec": 7.763,
+    "time_pypdf2_sec": 0.161
+  },
+  "pdf_chunk_counts": {
+    "fixed_size": 466,
+    "token_based": 265,
+    "recursive": 478,
+    "semantic": 867,
+    "hierarchical": 454
+  },
+  "docx_ingestion": {
+    "source": "document.docx",
+    "paragraphs_extracted": 706,
+    "headings_found": 21,
+    "time_sec": 0.497
+  },
+  "docx_chunk_counts": {
+    "fixed_size": 446,
+    "token_based": 241,
+    "recursive": 566,
+    "semantic": 828,
+    "hierarchical": 454
+  },
+  "txt_ingestion": {
+    "source": "document.txt",
+    "characters_extracted": 200675,
+    "time_sec": 0.0
+  },
+  "txt_chunk_counts": {
+    "fixed_size": 446,
+    "token_based": 242,
+    "recursive": 557,
+    "semantic": 828
+  },
+  "metadata_verification": {
+    "PDF": {
+      "chunks": 478,
+      "missing_source_filename": 0,
+      "status": "PASS"
+    },
+    "DOCX": {
+      "chunks": 566,
+      "missing_source_filename": 0,
+      "status": "PASS"
+    },
+    "TXT": {
+      "chunks": 557,
+      "missing_source_filename": 0,
+      "status": "PASS"
+    }
+  }
+}
