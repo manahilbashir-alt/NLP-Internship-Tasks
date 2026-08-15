@@ -1,0 +1,4 @@
+model,model_path,chunks,dimensions,load_time_seconds,embedding_time_seconds,chunks_per_second
+all-MiniLM-L6-v2,sentence-transformers/all-MiniLM-L6-v2,494,384,6.565,11.555,42.75
+all-mpnet-base-v2,sentence-transformers/all-mpnet-base-v2,494,768,338.668,94.841,5.21
+bge-large-en-v1.5,BAAI/bge-large-en-v1.5,494,1024,852.977,307.984,1.6
