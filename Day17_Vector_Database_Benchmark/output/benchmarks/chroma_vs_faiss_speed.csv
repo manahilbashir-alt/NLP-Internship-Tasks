@@ -1,0 +1,11 @@
+query,chroma_ms,faiss_ms
+Who is Mr. Bingley?,1.2519,0.1953
+Who is Elizabeth Bennet?,1.6946,0.1597
+Where does Mr. Darcy live?,1.2499,0.1373
+Why does Mrs. Bennet want her daughters to marry?,1.1736,0.097
+What is Netherfield Park?,1.1679,0.0982
+Who is Mr. Bennet's wife?,1.1786,0.0908
+What happens when Mr. Bingley arrives?,1.1321,0.0869
+What does Elizabeth think of Mr. Darcy?,1.2066,0.088
+Who is Jane Bennet?,1.116,0.1193
+What is Mr. Collins's relationship to the Bennet family?,1.2062,0.1065

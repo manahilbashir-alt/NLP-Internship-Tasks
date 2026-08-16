@@ -1,0 +1,4 @@
+model,top3_precision_percent,embedding_query_time_ms,faiss_vector_search_ms,chroma_vector_search_ms,faiss_total_ms,chroma_total_ms,precision_per_ms_faiss,precision_per_ms_chroma
+all-MiniLM-L6-v2,68.3335,11.9898,0.1179,1.2377,12.1077,13.2275,5.6438,5.166
+all-mpnet-base-v2,75.0,53.7548,0.1179,1.2377,53.8727,54.9925,1.3922,1.3638
+bge-large-en-v1.5,80.001,157.2945,0.1179,1.2377,157.4124,158.5322,0.5082,0.5046

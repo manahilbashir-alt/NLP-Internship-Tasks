@@ -1,0 +1,18 @@
+Tesseract version: tesseract 5.3.4
+
+OCR pages processed: 5
+
+=== Native vs OCR comparison (per page) ===
+Page 1: similarity=0.971  native_chars=34  ocr_chars=36
+Page 2: similarity=0.734  native_chars=2405  ocr_chars=2426
+Page 3: similarity=0.838  native_chars=3107  ocr_chars=3125
+Page 4: similarity=0.632  native_chars=3181  ocr_chars=3196
+Page 5: similarity=0.981  native_chars=4345  ocr_chars=4352
+
+Average native-vs-OCR text similarity: 0.832
+
+--- Native extraction sample (page 1, first 200 chars) ---
+'PRIDE AND PREJUDICE\nby Jane Austen'
+
+--- OCR extraction sample (page 1, first 200 chars) ---
+'PRIDE AND PREJUDICE\n\nby Jane Austen\n'

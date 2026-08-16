@@ -1,0 +1,120 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap");
+
+/* =========================================================
+   MESSAGE INPUT — "Velvet Ink"
+========================================================= */
+
+.message-input-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+
+    padding: 10px;
+
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+
+    border: 1px solid rgba(183, 166, 240, 0.3);
+    border-radius: 16px;
+
+    box-shadow: 0 12px 32px rgba(183, 166, 240, 0.18);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.message-input-container:focus-within {
+    border-color: rgba(183, 166, 240, 0.6);
+    box-shadow:
+        0 14px 36px rgba(183, 166, 240, 0.24),
+        0 0 0 3px rgba(183, 166, 240, 0.16);
+    transform: translateY(-1px);
+}
+
+.message-input-container textarea {
+    flex: 1;
+
+    min-height: 26px;
+    max-height: 150px;
+
+    padding: 10px 12px;
+    resize: none;
+
+    border: 0;
+    outline: none;
+    background: transparent;
+
+    color: #4A3F5C;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+.message-input-container textarea::placeholder {
+    color: #A99BC2;
+}
+
+.message-input-container button {
+    flex-shrink: 0;
+
+    padding: 11px 24px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background: linear-gradient(135deg, #B7A6F0, #FFC9A8);
+    color: #4A3F5C;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 6px 16px rgba(183, 166, 240, 0.35);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+.message-input-container button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+        0 8px 22px rgba(183, 166, 240, 0.45);
+}
+
+.message-input-container button:active {
+    transform: translateY(0);
+    filter: brightness(0.98);
+}
+
+@media (max-width: 650px) {
+    .message-input-container {
+        padding: 8px;
+        border-radius: 13px;
+        gap: 8px;
+    }
+
+    .message-input-container textarea {
+        font-size: 13px;
+        padding: 8px 10px;
+    }
+
+    .message-input-container button {
+        padding: 9px 16px;
+        font-size: 13px;
+    }
+}

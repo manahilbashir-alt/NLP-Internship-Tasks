@@ -1,0 +1,13 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+
+# Vector databases / indexes
+data/chroma/
+data/chroma_benchmark/
+data/faiss/
+data/faiss_benchmark/
+
+# Generated embeddings
+output/embeddings/*.npy

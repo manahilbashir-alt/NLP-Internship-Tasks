@@ -1,0 +1,23 @@
+Refund Policy - Acme SaaS Platform
+
+Monthly plans: customers on monthly billing can request a full refund within 7 days
+of the charge date. Refunds are processed to the original payment method within
+5-10 business days.
+
+Annual plans: customers on annual billing have a 30-day refund window from the date
+of purchase. After 30 days, annual plans are non-refundable but can be cancelled to
+stop future renewals.
+
+Enterprise plans: refunds for enterprise contracts are governed by the individual
+service agreement signed with the customer, not this general policy. Contact your
+account manager for contract-specific terms.
+
+How to request a refund: email billing@acme.example with your account ID and the
+reason for the request. Refund requests are typically reviewed within 2 business days.
+
+Exceptions: refunds outside these windows may be granted at Acme's discretion in
+cases of billing error, duplicate charges, or service outages exceeding 24 hours.
+
+Data retention after cancellation: account data is retained for 90 days after
+cancellation or refund, after which it is permanently deleted. Customers can request
+an export of their data at any point during this 90-day window.

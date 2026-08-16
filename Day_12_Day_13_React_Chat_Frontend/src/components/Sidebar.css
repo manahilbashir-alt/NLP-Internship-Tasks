@@ -1,0 +1,675 @@
+/* =========================================================
+   NOTEBOOK SIDEBAR — "Soft Bloom" pastel theme
+========================================================= */
+
+.sidebar {
+    width: 292px;
+    min-width: 292px;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 27px 18px 18px;
+
+    background: #F5EEFD;
+
+    color: #4A3F5C;
+
+    border-right: 1px solid rgba(183, 166, 240, 0.22);
+
+    overflow: hidden;
+
+    position: relative;
+}
+
+.sidebar::before {
+    content: "";
+
+    position: absolute;
+    top: -80px;
+    left: -80px;
+    width: 220px;
+    height: 220px;
+
+    background: radial-gradient(circle, rgba(255, 201, 168, 0.35), transparent 70%);
+    filter: blur(10px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.sidebar-header {
+    padding: 0 7px 26px;
+
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-mark {
+    width: 35px;
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: linear-gradient(140deg, #B7A6F0, #9FE8D8);
+
+    color: #4A3F5C;
+
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px;
+
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+        0 6px 16px rgba(183, 166, 240, 0.4);
+
+    transition: transform 0.25s ease;
+}
+
+.sidebar-brand:hover .brand-mark {
+    transform: rotate(-4deg) scale(1.05);
+}
+
+.sidebar-brand h2 {
+    margin: 0;
+
+    color: #4A3F5C;
+
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 21px;
+    font-weight: 600;
+
+    letter-spacing: -0.01em;
+}
+
+.sidebar-brand span:last-child {
+    display: block;
+
+    margin-top: 1px;
+
+    color: #A99BC2;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   NEW CHAT
+========================================================= */
+
+.new-chat-button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px 14px;
+
+    border: 1px solid rgba(183, 166, 240, 0.4);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.5);
+
+    color: #4A3F5C;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    position: relative;
+    z-index: 1;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.new-chat-button:hover {
+    background: linear-gradient(135deg, rgba(183, 166, 240, 0.22), rgba(255, 201, 168, 0.22));
+    border-color: rgba(183, 166, 240, 0.65);
+
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(183, 166, 240, 0.25);
+}
+
+.new-chat-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.new-chat-icon {
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+
+    background: linear-gradient(140deg, #B7A6F0, #9FE8D8);
+
+    color: #FFFFFF;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    transition: transform 0.25s ease;
+}
+
+.new-chat-button:hover .new-chat-icon {
+    transform: rotate(90deg);
+}
+
+
+/* =========================================================
+   SESSION SECTION
+========================================================= */
+
+.session-section {
+    flex: 1;
+
+    min-height: 0;
+
+    margin-top: 28px;
+
+    display: flex;
+    flex-direction: column;
+
+    position: relative;
+    z-index: 1;
+}
+
+.session-section-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 8px 9px;
+
+    color: #A99BC2;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.session-count {
+    min-width: 21px;
+    height: 19px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 999px;
+
+    background: rgba(183, 166, 240, 0.18);
+
+    color: #7A6E92;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   SESSION LIST
+========================================================= */
+
+.session-list {
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    overflow-y: auto;
+
+    padding-right: 2px;
+}
+
+.session-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.session-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.session-list::-webkit-scrollbar-thumb {
+    background: rgba(183, 166, 240, 0.3);
+    border-radius: 999px;
+}
+
+.session-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(183, 166, 240, 0.55);
+}
+
+
+/* =========================================================
+   SESSION ITEM
+========================================================= */
+
+.session-item {
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    padding: 11px 10px;
+
+    border: 1px solid transparent;
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: #4A3F5C;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    position: relative;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.session-item::before {
+    content: "";
+
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: -1px;
+
+    width: 2px;
+    border-radius: 999px;
+
+    background: linear-gradient(to bottom, #B7A6F0, #FFC9A8);
+
+    opacity: 0;
+    transform: scaleY(0.4);
+    transform-origin: center;
+
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.session-item:hover {
+    background: rgba(255, 255, 255, 0.55);
+    border-color: rgba(183, 166, 240, 0.25);
+
+    transform: translateX(1px);
+}
+
+.session-item.active {
+    background: rgba(255, 255, 255, 0.7);
+    border-color: rgba(183, 166, 240, 0.45);
+}
+
+.session-item.active::before {
+    opacity: 1;
+    transform: scaleY(1);
+}
+
+/* ready for a delete button once you add one to the session item —
+   give it this class and it will fade in on hover, aligned right */
+.session-delete {
+    flex-shrink: 0;
+
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+
+    border: none;
+    border-radius: 6px;
+
+    background: transparent;
+    color: #A99BC2;
+
+    font-size: 12px;
+    cursor: pointer;
+
+    opacity: 0;
+    transition: opacity 0.18s ease, background 0.18s ease, color 0.18s ease;
+}
+
+.session-item:hover .session-delete {
+    opacity: 1;
+}
+
+.session-delete:hover {
+    background: rgba(255, 138, 138, 0.16);
+    color: #E86B6B;
+}
+
+
+/* =========================================================
+   SESSION INDICATOR
+========================================================= */
+
+.session-indicator {
+    width: 15px;
+
+    flex-shrink: 0;
+
+    margin-top: 2px;
+
+    color: #A99BC2;
+
+    font-size: 8px;
+
+    transition: color 0.2s ease;
+}
+
+.session-item.active .session-indicator {
+    color: #9FE8D8;
+}
+
+
+/* =========================================================
+   SESSION CONTENT
+========================================================= */
+
+.session-content {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.session-title {
+    overflow: hidden;
+
+    color: #4A3F5C;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.session-preview {
+    overflow: hidden;
+
+    color: #A99BC2;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 11px;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   NO SESSIONS
+========================================================= */
+
+.no-sessions {
+    padding: 20px 10px;
+
+    color: #A99BC2;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 12px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 14px 8px 3px;
+
+    border-top: 1px solid rgba(183, 166, 240, 0.2);
+
+    color: #A99BC2;
+
+    font-family: "Inter", -apple-system, sans-serif;
+    font-size: 10px;
+
+    position: relative;
+    z-index: 1;
+}
+
+.footer-dot {
+    width: 6px;
+    height: 6px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #9FE8D8;
+
+    box-shadow: 0 0 0 3px rgba(159, 232, 216, 0.3);
+
+    animation: pulseDot 2.6s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% {
+        box-shadow: 0 0 0 3px rgba(159, 232, 216, 0.3);
+    }
+
+    50% {
+        box-shadow: 0 0 0 5px rgba(159, 232, 216, 0.1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .footer-dot {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 750px) {
+    .sidebar {
+        width: 235px;
+        min-width: 235px;
+
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .sidebar-brand h2 {
+        font-size: 18px;
+    }
+
+    .sidebar-brand span:last-child {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        width: 72px;
+        min-width: 72px;
+
+        padding: 18px 10px;
+    }
+
+    .sidebar-header {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .sidebar-brand {
+        justify-content: center;
+    }
+
+    .sidebar-brand > div {
+        display: none;
+    }
+
+    .new-chat-button {
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .new-chat-button > span:last-child {
+        display: none;
+    }
+
+    .session-section-label,
+    .session-content,
+    .sidebar-footer {
+        display: none;
+    }
+
+    .session-item {
+        justify-content: center;
+        padding: 12px 5px;
+    }
+
+    .session-indicator {
+        width: auto;
+    }
+}
+.session-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+    position: relative;
+}
+
+.session-select {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 10px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    border-radius: 12px;
+    color: inherit;
+}
+
+.session-select:hover {
+    background: rgba(183, 166, 240, 0.1);
+}
+
+.session-item.active .session-select {
+    background: rgba(183, 166, 240, 0.16);
+}
+
+.session-indicator {
+    flex-shrink: 0;
+    color: #b7a6f0;
+    font-size: 9px;
+}
+
+.session-content {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.session-title {
+    overflow: hidden;
+    color: #4a3f5c;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.session-preview {
+    margin-top: 3px;
+    overflow: hidden;
+    color: #9a8fae;
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.session-delete {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #b8adbf;
+    font-size: 18px;
+    opacity: 0;
+    transition:
+        opacity 0.2s ease,
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+.session-item:hover .session-delete {
+    opacity: 1;
+}
+
+.session-delete:hover {
+    color: #c96f78;
+    background: rgba(201, 111, 120, 0.12);
+}
