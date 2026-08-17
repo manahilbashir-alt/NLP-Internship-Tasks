@@ -1,0 +1,11 @@
+question,bm25_precision,vector_precision,hybrid_precision
+What is retrieval augmented generation?,1.0,1.0,1.0
+What are the advantages of vector databases?,0.6666666666666666,1.0,1.0
+How does BM25 work?,0.0,0.0,0.0
+What is semantic search?,0.3333333333333333,0.3333333333333333,0.3333333333333333
+What are embeddings?,0.6666666666666666,1.0,1.0
+What is a vector database?,1.0,1.0,1.0
+Why is retrieval important in RAG?,1.0,1.0,1.0
+What is hybrid search?,0.6666666666666666,0.3333333333333333,0.6666666666666666
+How does semantic similarity work?,0.6666666666666666,0.6666666666666666,0.6666666666666666
+Why combine BM25 and vector search?,1.0,1.0,1.0

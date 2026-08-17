@@ -1,0 +1,4 @@
+method,average_top3_precision,precision_percent
+BM25,0.7,70.0
+Vector,0.7333,73.33
+Hybrid RRF,0.7667,76.67
