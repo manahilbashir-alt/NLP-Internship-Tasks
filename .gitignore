@@ -1,13 +1,23 @@
+# Environment variables
+.env
+
+# Python virtual environment
+.venv/
 venv/
+
+# Python cache
 __pycache__/
 *.pyc
-word2vec.model
-.env
-*.env
-gcm-diagnose.log
-node_modules/
-.env
-.venv/
-__pycache__/
-dist/
-.vite/
+*.pyo
+
+# ChromaDB
+chroma_db/
+data/chroma_db/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
