@@ -1,0 +1,36 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# Generated data
+data/chroma_db/
+data/uploads/
+
+backend/data/chroma_db/
+backend/data/uploads/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
