@@ -1,0 +1,9 @@
+Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context.
+
+Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings.
+
+ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question.
+
+The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context.
+
+RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question.

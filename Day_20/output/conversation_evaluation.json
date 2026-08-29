@@ -1,0 +1,673 @@
+{
+    "project": "Day 20 Conversational RAG",
+    "evaluation": "10 multi-turn conversations",
+    "summary": {
+        "total_conversations": 10,
+        "turns_per_conversation": 3,
+        "total_turns": 30,
+        "memory_helped": 12,
+        "possible_memory_noise": 0,
+        "neutral": 8,
+        "baseline": 10
+    },
+    "conversations": [
+        {
+            "conversation_id": 1,
+            "topic": "ChromaDB",
+            "session_id": "evaluation_session_1",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "What is ChromaDB?",
+                    "contextualized_question": "What is ChromaDB?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. ChromaDB is one example of a vector database that can be used in retrieval-augmented generation systems. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.021,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What about the second point?",
+                    "contextualized_question": "Regarding the previous question 'What is ChromaDB?', the user now asks: What about the second point?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. ChromaDB is one example of a vector database that can be used in retrieval-augmented generation systems. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0201,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                },
+                {
+                    "turn": 3,
+                    "question": "Why is it useful in RAG?",
+                    "contextualized_question": "Regarding the previous question 'What about the second point?', the user now asks: Why is it useful in RAG?",
+                    "answer": "Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question. Using multiple documents allows a RAG system to combine information from different sources when answering a question.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0181,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 2,
+            "topic": "Embeddings",
+            "session_id": "evaluation_session_2",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "What are embeddings?",
+                    "contextualized_question": "What are embeddings?",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. Vector databases are designed to store and search numerical representations of information called embeddings. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0142,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "How are they used in retrieval?",
+                    "contextualized_question": "Regarding the previous question 'What are embeddings?', the user now asks: How are they used in retrieval?",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. Vector databases are designed to store and search numerical representations of information called embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0181,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                },
+                {
+                    "turn": 3,
+                    "question": "What about the previous concept?",
+                    "contextualized_question": "Regarding the previous question 'How are they used in retrieval?', the user now asks: What about the previous concept?",
+                    "answer": "Using multiple documents allows a RAG system to combine information from different sources when answering a question. The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response. Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0179,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 3,
+            "topic": "Vector databases",
+            "session_id": "evaluation_session_3",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "What is a vector database?",
+                    "contextualized_question": "What is a vector database?",
+                    "answer": "Vector databases are designed to store and search numerical representations of information called embeddings. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. ChromaDB is one example of a vector database that can be used in retrieval-augmented generation systems.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0148,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "How does it help RAG?",
+                    "contextualized_question": "Regarding the previous question 'What is a vector database?', the user now asks: How does it help RAG?",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. Vector databases are designed to store and search numerical representations of information called embeddings. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0196,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                },
+                {
+                    "turn": 3,
+                    "question": "What about similarity search?",
+                    "contextualized_question": "Regarding the previous question 'How does it help RAG?', the user now asks: What about similarity search?",
+                    "answer": "Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context. ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. Using multiple documents allows a RAG system to combine information from different sources when answering a question.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0225,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 4,
+            "topic": "Similarity search",
+            "session_id": "evaluation_session_4",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "What is similarity search?",
+                    "contextualized_question": "What is similarity search?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. Vector databases are designed to store and search numerical representations of information called embeddings. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0166,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What does it compare?",
+                    "contextualized_question": "Regarding the previous question 'What is similarity search?', the user now asks: What does it compare?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0183,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                },
+                {
+                    "turn": 3,
+                    "question": "Why is that important?",
+                    "contextualized_question": "Regarding the previous question 'What does it compare?', the user now asks: Why is that important?",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. Using multiple documents allows a RAG system to combine information from different sources when answering a question. The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0178,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 5,
+            "topic": "RAG",
+            "session_id": "evaluation_session_5",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "What is RAG?",
+                    "contextualized_question": "What is RAG?",
+                    "answer": "Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0143,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What is the retrieval part?",
+                    "contextualized_question": "What is the retrieval part?",
+                    "answer": "The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response. Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context. The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0129,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                },
+                {
+                    "turn": 3,
+                    "question": "What happens after retrieval?",
+                    "contextualized_question": "What happens after retrieval?",
+                    "answer": "The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question. Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0179,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 6,
+            "topic": "Embeddings and queries",
+            "session_id": "evaluation_session_6",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "How is a user question converted for retrieval?",
+                    "contextualized_question": "How is a user question converted for retrieval?",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response. Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0182,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What is compared with it?",
+                    "contextualized_question": "What is compared with it?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0138,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                },
+                {
+                    "turn": 3,
+                    "question": "Why are embeddings needed?",
+                    "contextualized_question": "Regarding the previous question 'What is compared with it?', the user now asks: Why are embeddings needed?",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. Vector databases are designed to store and search numerical representations of information called embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0184,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 7,
+            "topic": "Vector retrieval",
+            "session_id": "evaluation_session_7",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "How does vector retrieval work?",
+                    "contextualized_question": "How does vector retrieval work?",
+                    "answer": "Vector databases are designed to store and search numerical representations of information called embeddings. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. ChromaDB is one example of a vector database that can be used in retrieval-augmented generation systems.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0174,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What happens to the query?",
+                    "contextualized_question": "What happens to the query?",
+                    "answer": "The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0159,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                },
+                {
+                    "turn": 3,
+                    "question": "What about the stored documents?",
+                    "contextualized_question": "Regarding the previous question 'What happens to the query?', the user now asks: What about the stored documents?",
+                    "answer": "In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. Using multiple documents allows a RAG system to combine information from different sources when answering a question.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0188,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 8,
+            "topic": "ChromaDB and RAG",
+            "session_id": "evaluation_session_8",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "How can ChromaDB be used in RAG?",
+                    "contextualized_question": "How can ChromaDB be used in RAG?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question. Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0137,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What does it store?",
+                    "contextualized_question": "Regarding the previous question 'How can ChromaDB be used in RAG?', the user now asks: What does it store?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0174,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                },
+                {
+                    "turn": 3,
+                    "question": "How does retrieval happen?",
+                    "contextualized_question": "How does retrieval happen?",
+                    "answer": "The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response. Retrieval-Augmented Generation (RAG) combines information retrieval with language generation. A RAG system first retrieves relevant information from a knowledge base and then provides that information to a language model as context. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0149,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 9,
+            "topic": "Document chunks",
+            "session_id": "evaluation_session_9",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "Why do RAG systems use document chunks?",
+                    "contextualized_question": "Why do RAG systems use document chunks?",
+                    "answer": "In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. RAG can reduce hallucinations by grounding the language model's answer in retrieved documents. However, RAG can still fail when the wrong chunks are retrieved, when important information is missing, or when the retrieved context is insufficient to answer the question. Using multiple documents allows a RAG system to combine information from different sources when answering a question.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0216,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "How are chunks retrieved?",
+                    "contextualized_question": "How are chunks retrieved?",
+                    "answer": "The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. The top-k retrieval method returns the k most relevant chunks for a query. A smaller k may miss useful information, while a very large k may introduce irrelevant context.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.0192,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                },
+                {
+                    "turn": 3,
+                    "question": "What about embeddings?",
+                    "contextualized_question": "Regarding the previous question 'How are chunks retrieved?', the user now asks: What about embeddings?",
+                    "answer": "In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. Vector databases are designed to store and search numerical representations of information called embeddings.",
+                    "sources": [
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.0226,
+                    "memory_effect": "helped",
+                    "memory_reason": "Session memory added previous conversation context to the follow-up question."
+                }
+            ]
+        },
+        {
+            "conversation_id": 10,
+            "topic": "Independent question after context",
+            "session_id": "evaluation_session_10",
+            "turns": [
+                {
+                    "turn": 1,
+                    "question": "What is ChromaDB?",
+                    "contextualized_question": "What is ChromaDB?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. ChromaDB is one example of a vector database that can be used in retrieval-augmented generation systems. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 2,
+                    "retrieval_time_seconds": 0.0165,
+                    "memory_effect": "baseline",
+                    "memory_reason": "First turn has no previous conversation history."
+                },
+                {
+                    "turn": 2,
+                    "question": "What is similarity search?",
+                    "contextualized_question": "What is similarity search?",
+                    "answer": "ChromaDB is a vector database that can store embeddings and perform similarity searches. Similarity search allows a RAG system to find chunks of text that are semantically related to a user's question. Vector databases are designed to store and search numerical representations of information called embeddings. Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 4,
+                    "retrieval_time_seconds": 0.013,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                },
+                {
+                    "turn": 3,
+                    "question": "Tell me about embeddings.",
+                    "contextualized_question": "Tell me about embeddings.",
+                    "answer": "Vector databases store numerical representations called embeddings. Embeddings capture the semantic meaning of text. When a user asks a question, the question is converted into an embedding and compared with document embeddings. Vector databases are designed to store and search numerical representations of information called embeddings. In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.",
+                    "sources": [
+                        {
+                            "filename": "rag_basics.txt",
+                            "page": 1
+                        },
+                        {
+                            "filename": "vector_database_notes.txt",
+                            "page": 1
+                        }
+                    ],
+                    "history_length": 6,
+                    "retrieval_time_seconds": 0.015,
+                    "memory_effect": "neutral",
+                    "memory_reason": "Memory did not change the question."
+                }
+            ]
+        }
+    ]
+}

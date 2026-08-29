@@ -1,0 +1,9 @@
+Vector databases are designed to store and search numerical representations of information called embeddings.
+
+ChromaDB is one example of a vector database that can be used in retrieval-augmented generation systems.
+
+In a RAG pipeline, embeddings allow the system to compare the meaning of a user query with stored document chunks.
+
+The retrieval stage selects the most relevant chunks and passes them to a language model. The language model then uses the retrieved information to generate a grounded response.
+
+Using multiple documents allows a RAG system to combine information from different sources when answering a question.
