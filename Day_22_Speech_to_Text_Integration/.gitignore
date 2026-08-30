@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Environment variables
+.env
+
+# Node / React
+node_modules/
+dist/
+
+# IDE / OS
+.vscode/
+.idea/
+*.log
+
+# Generated files
+*.tmp
