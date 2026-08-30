@@ -9,8 +9,12 @@ function calling, session management, and token/cost monitoring.
 ```
 ai-tutor-app/
 ├── backend/
-│   ├── main.py                  # FastAPI app: chat, streaming, sessions, tools
+│   ├── main.py                  # FastAPI app: routing/orchestration ONLY
+│   ├── prompts.py                # ALL prompt content: personas, few-shot, production templates, JSON schema
+│   ├── moderation.py             # Local harsh-tone/abuse detection + de-escalation replies
 │   ├── api_comparison_demo.py   # generate_content vs. stateful chats session, side by side
+│   ├── test_session_isolation.py
+│   ├── test_moderation.py        # Proves abusive/shouting messages never reach the model
 │   ├── requirements.txt
 │   └── .env.example
 └── client/                      # React + Vite + Tailwind
@@ -19,10 +23,11 @@ ai-tutor-app/
         ├── api.js                # REST + SSE streaming client
         └── components/
             ├── Sidebar.jsx
-            ├── ChatMessage.jsx
+            ├── ChatMessage.jsx   # now shows a "tone flagged" state for moderated replies
             ├── MessageInput.jsx
             ├── TypingIndicator.jsx
             ├── PersonaSelector.jsx
+            ├── PromptLab.jsx
             └── StatsBar.jsx
 ```
 
@@ -56,20 +61,22 @@ Open `http://localhost:5173`.
 | Concept | Where |
 |---|---|
 | Gemini client, structured prompt, JSON response | `backend/main.py` — `client.models.generate_content` calls |
+| **Prompts separated from application code** | `backend/prompts.py` — every persona, few-shot example, production prompt template, and JSON schema lives here. `main.py` only ever imports and *uses* prompts (via `build_system_instruction()` / `PRODUCTION_PROMPTS[...]`); it never defines prompt text inline. |
+| **Harsh tone / abusive language handling** | `backend/moderation.py` (see "Handling harsh or abusive tone" below) |
 | Token metrics + exact USD cost | `calculate_cost()`, returned in every `ChatResponse` and shown live in `StatsBar` |
 | Stateless `generate_content` vs. stateful `chats` session | `backend/api_comparison_demo.py` |
 | Streaming (`stream=True`) | `POST /api/chat/stream` (SSE) + `streamChat()` in `api.js`, toggled via the "stream" checkbox in the UI |
 | Temperature / Top-P / Max Tokens experiments | `POST /api/experiment/sampling` — runs 3 temperature variants on one prompt |
 | system / user / assistant roles | Every session's `messages` array in `chat_sessions` |
 | Strict JSON-schema output | `POST /api/prompts/structured-json` — API-level `response_format: json_schema` (`strict: true`) against `STUDY_PLAN_SCHEMA`, **plus** local `pydantic` validation (`StudyPlan`) with one automatic retry that feeds the validation error back to the model on deviation. `json_mode` on `/api/chat` (basic `json_object` mode) still exists for lighter-weight cases. |
-| Few-shot examples | `FEW_SHOT_EXAMPLES` in `main.py` |
+| Few-shot examples | `FEW_SHOT_EXAMPLES` in `backend/prompts.py` |
 | Production prompt: structured JSON generation | `/api/prompts/structured-json`, reachable from the UI's **Prompt Lab** panel |
 | Production prompt: unstructured text parsing | `/api/prompts/text_parsing` (`PRODUCTION_PROMPTS["text_parsing"]`), Prompt Lab |
 | Production prompt: code generation | `/api/prompts/code_generation`, Prompt Lab |
 | Production prompt: document summarization | `/api/prompts/summarization`, Prompt Lab |
-| Function calling vs. JSON mode — documented | Comment block above `PRODUCTION_PROMPTS` in `main.py` (also summarized below) |
-| Persona switching (formal / casual / technical) | `PERSONAS` dict + `PersonaSelector.jsx` |
-| Function calling: tools, `tool_choice`, JSON schemas | `TOOLS` list in `main.py` |
+| Function calling vs. JSON mode — documented | Comment block in `backend/prompts.py` (also summarized below) |
+| Persona switching (formal / casual / technical) | `PERSONAS` dict in `backend/prompts.py` + `PersonaSelector.jsx` |
+| Function calling: tools, `tool_choice`, JSON schemas | `TOOL_SCHEMAS` list in `main.py` |
 | 4 tools: time, calculator, mock search, currency | `execute_tool()` |
 | Full tool-calling loop, multi-tool chaining | `run_tool_loop()` (up to 4 hops) |
 | Edge cases (declined calls, bad args, tool errors) | try/except in `execute_tool`, allow-listed characters for `calculate`, graceful `json.JSONDecodeError` handling |
@@ -99,6 +106,53 @@ Open `http://localhost:5173`.
 | **In this project** | `/api/prompts/structured-json` | `run_tool_loop()`, `/api/chat` with `use_tools: true` |
 
 They're complementary, not competing — a tool's result can itself be JSON that the model later formats into a JSON reply, but most single tasks only need one of the two.
+
+## Prompts, separated from application code
+
+Every day in Week 2 that touched prompt engineering (personas, few-shot
+examples, production prompt templates, structured-output schemas) is
+collected in one place: `backend/prompts.py`. `main.py` contains **zero**
+inline prompt strings — it only imports from `prompts.py` and calls
+`build_system_instruction(persona)` or looks up `PRODUCTION_PROMPTS[...]`.
+
+Why this split matters in practice:
+- You can tune wording, temperature, or add a new persona/production
+  prompt by editing exactly one file, without touching any FastAPI route.
+- It makes the prompts easy to diff and review on their own — the same
+  reason you'd keep SQL queries out of your view logic.
+- `main.py` stays focused on *orchestration* (sessions, streaming, tool
+  loop, logging), which is what actually needs to be debugged when a
+  request fails.
+
+## Handling harsh or abusive tone
+
+A learner having a frustrating study session might snap at the tutor.
+This app handles that in two layers, both implemented in
+`backend/moderation.py`:
+
+1. **Local pre-check (before any API call).** `check_tone()` runs on
+   every incoming message — profanity/insults (whole-word match, e.g.
+   "stupid", "useless", curse words), ALL-CAPS shouting (>70% uppercase
+   letters), and aggressive punctuation (`!!!`, `???`). If flagged, the
+   message **never reaches Gemini**: the backend returns one of a small
+   set of calm, firm de-escalation replies instead, at zero token cost
+   and zero latency. This happens identically on both `/api/chat` and
+   `/api/chat/stream`.
+2. **Model-level guardrail (for everything the local check misses).**
+   Every persona's system prompt (`prompts.py`) carries a trailer
+   instructing the model to stay calm and never mirror a harsh tone back,
+   even for sarcasm or frustration that doesn't contain a flagged word.
+
+The frontend reflects this: a moderated reply renders with an amber
+"tone flagged" badge instead of the normal persona label, doesn't offer
+a "regenerate" action, and doesn't trigger an auto-title-generation call
+(nothing meaningful to title yet). See `backend/test_moderation.py` for
+automated proof that flagged messages are blocked pre-model while
+ordinary questions pass through untouched.
+
+This is a classroom-scale heuristic, not a production moderation
+pipeline — the word list in `moderation.py` is intentionally small and
+easy to extend, not exhaustive.
 
 ## Regenerate, fixed
 

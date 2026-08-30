@@ -108,7 +108,12 @@ export default function App() {
         (final) => {
           updateSession(id, (s) => ({
             ...s,
-            messages: [...s.messages, { role: 'assistant', content: acc, usage: final.usage ? { ...final.usage, latency_ms: final.latency_ms } : null }],
+            messages: [...s.messages, {
+              role: 'assistant',
+              content: acc,
+              usage: final.usage ? { ...final.usage, latency_ms: final.latency_ms } : null,
+              moderated: !!final.moderated,
+            }],
             usage: {
               prompt_tokens: s.usage.prompt_tokens + (final.usage?.prompt_tokens || 0),
               completion_tokens: s.usage.completion_tokens + (final.usage?.completion_tokens || 0),
@@ -117,7 +122,9 @@ export default function App() {
           }))
           setStreamBuffer('')
           setIsTyping(false)
-          if (isFirstMessage) maybeTitle(id)
+          // Don't waste a title-generation call on a message that never
+          // reached the model — nothing meaningful to title yet.
+          if (isFirstMessage && !final.moderated) maybeTitle(id)
         },
         (err) => {
           updateSession(id, (s) => ({
@@ -133,14 +140,19 @@ export default function App() {
         const res = await sendChat({ sessionId: id, message: text, persona, temperature: 0.7, useTools, jsonMode: false })
         updateSession(id, (s) => ({
           ...s,
-          messages: [...s.messages, { role: 'assistant', content: res.reply, usage: { ...res.usage, latency_ms: res.latency_ms } }],
+          messages: [...s.messages, {
+            role: 'assistant',
+            content: res.reply,
+            usage: { ...res.usage, latency_ms: res.latency_ms },
+            moderated: !!res.moderated,
+          }],
           usage: {
             prompt_tokens: s.usage.prompt_tokens + res.usage.prompt_tokens,
             completion_tokens: s.usage.completion_tokens + res.usage.completion_tokens,
             cost: s.usage.cost + res.usage.cost,
           },
         }))
-        if (isFirstMessage) maybeTitle(id)
+        if (isFirstMessage && !res.moderated) maybeTitle(id)
       } catch (e) {
         updateSession(id, (s) => ({
           ...s,
@@ -244,8 +256,9 @@ export default function App() {
                 role={m.role}
                 content={m.content}
                 usage={m.usage}
+                moderated={m.moderated}
                 isLast={i === activeSession.messages.length - 1}
-                onRegenerate={m.role === 'assistant' ? handleRegenerate : null}
+                onRegenerate={m.role === 'assistant' && !m.moderated ? handleRegenerate : null}
               />
             ))
           )}

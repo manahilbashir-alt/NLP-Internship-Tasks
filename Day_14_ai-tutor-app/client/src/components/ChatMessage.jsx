@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function ChatMessage({ role, content, usage, onRegenerate, isLast }) {
+export default function ChatMessage({ role, content, usage, onRegenerate, isLast, moderated }) {
   const [copied, setCopied] = useState(false)
   const isUser = role === 'user'
 
@@ -17,10 +17,20 @@ export default function ChatMessage({ role, content, usage, onRegenerate, isLast
           className={
             isUser
               ? 'bg-rubric-red/10 border border-rubric-red/35 text-codex-text rounded-lg rounded-br-sm px-4 py-3 shadow-rubric'
-              : 'bg-codex-panel border border-gold-leaf/25 text-codex-text rounded-lg rounded-bl-sm px-4 py-3 shadow-illuminate'
+              : moderated
+                ? 'bg-amber-500/10 border border-amber-500/40 text-codex-text rounded-lg rounded-bl-sm px-4 py-3 shadow-illuminate'
+                : 'bg-codex-panel border border-gold-leaf/25 text-codex-text rounded-lg rounded-bl-sm px-4 py-3 shadow-illuminate'
           }
         >
-          {!isUser && (
+          {!isUser && moderated && (
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span className="text-[11px] uppercase tracking-[0.15em] text-amber-400/90 font-mono">
+                Companion · tone flagged
+              </span>
+            </div>
+          )}
+          {!isUser && !moderated && (
             <div className="flex items-center gap-1.5 mb-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-gold-leaf glow-dot" />
               <span className="text-[11px] uppercase tracking-[0.15em] text-gold-leaf/80 font-mono">Companion</span>

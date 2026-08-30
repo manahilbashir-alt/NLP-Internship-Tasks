@@ -5,8 +5,14 @@ A FastAPI service that wraps the Google Gemini API to power an educational
 chat application. Demonstrates: single-turn vs chat-session usage, streaming,
 temperature/top_p experimentation, system/user/model roles, structured JSON
 output, few-shot prompting, persona switching, function calling with a
-multi-tool agent loop, session management, token/cost tracking, and
-structured logging.
+multi-tool agent loop, session management, token/cost tracking, structured
+logging, and local moderation of harsh/abusive user tone.
+
+This file is routing + orchestration ONLY. Prompt content (personas,
+few-shot examples, production prompt templates, JSON schemas) lives in
+`prompts.py`; the abuse/harsh-tone detection and de-escalation logic lives
+in `moderation.py`. Keeping those separate from the FastAPI routes means
+either one can be edited/tuned without touching request handling.
 
 Run:
     pip install -r requirements.txt
@@ -29,6 +35,17 @@ from pydantic import BaseModel, Field, ValidationError
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+
+from prompts import (
+    PERSONAS,
+    DEFAULT_PERSONA,
+    FEW_SHOT_EXAMPLES,
+    PRODUCTION_PROMPTS,
+    STUDY_PLAN_SCHEMA,
+    TITLE_SYSTEM_PROMPT,
+    build_system_instruction,
+)
+from moderation import check_tone, moderated_response, log_moderation_event
 
 # ---------------------------------------------------------------------------
 # Setup
@@ -87,122 +104,12 @@ def calculate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> fl
 
 
 # ---------------------------------------------------------------------------
-# Personas — system prompts the frontend can toggle between
+# NOTE: Personas, few-shot examples, production prompt templates, and the
+# structured-output schema all live in prompts.py now, not here — see that
+# file. main.py only ever *uses* prompts, it doesn't define them. The
+# function-calling-vs-JSON-mode explanation also moved there since it's
+# prompt/response-shaping guidance, not routing logic.
 # ---------------------------------------------------------------------------
-
-PERSONAS = {
-    "formal": (
-        "You are Professor Aldridge, a precise and formal academic tutor. "
-        "Explain concepts rigorously, use correct terminology, cite the "
-        "relevant field of study, and structure answers with clear "
-        "headings when helpful. Avoid slang."
-    ),
-    "casual": (
-        "You are Sam, a friendly and encouraging study buddy. Explain "
-        "concepts in plain, relaxed language, use everyday analogies, "
-        "and keep the tone warm and conversational. It's fine to use "
-        "the occasional emoji."
-    ),
-    "technical": (
-        "You are Dr. Byte, a technical mentor for advanced learners. "
-        "Favor precise definitions, include code or formulas when "
-        "relevant, and don't shy away from depth. Assume the learner has "
-        "a strong technical background."
-    ),
-}
-
-DEFAULT_PERSONA = "casual"
-
-FEW_SHOT_EXAMPLES = [
-    {"role": "user", "content": "Explain photosynthesis in one sentence."},
-    {"role": "assistant", "content": (
-        "Photosynthesis is the process by which plants use sunlight, "
-        "water, and carbon dioxide to produce glucose and oxygen."
-    )},
-    {"role": "user", "content": "Explain the Pythagorean theorem in one sentence."},
-    {"role": "assistant", "content": (
-        "In a right triangle, the square of the hypotenuse equals the sum "
-        "of the squares of the other two sides (a\u00b2 + b\u00b2 = c\u00b2)."
-    )},
-]
-
-# ---------------------------------------------------------------------------
-# Function calling vs. JSON mode — when to use each
-# ---------------------------------------------------------------------------
-# JSON MODE (`response_mime_type="application/json"`, optionally with
-# `response_json_schema=...`)
-#   Use when: the model's entire reply IS the structured data you want
-#   (e.g. "generate a study plan as JSON"). There is no local code the
-#   model needs to invoke — it's just constrained to emit valid JSON
-#   instead of free text. See `/api/prompts/structured-json`.
-#
-# FUNCTION CALLING (`config.tools=[...]`)
-#   Use when: the model needs to trigger *your* code to get information
-#   it doesn't have (current time, a calculation, a database lookup) or
-#   to take an action, and then reason over the result before replying
-#   in natural language. See `run_tool_loop()` and `/api/chat` with
-#   `use_tools=true`.
-#
-# Rule of thumb: JSON mode shapes the *output*; function calling extends
-# the model's *capabilities*. They can be combined (a tool's result can
-# itself be JSON that the model then formats), but most tasks need only
-# one of the two.
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-# Production prompt templates — 4 common production use cases
-# ---------------------------------------------------------------------------
-
-PRODUCTION_PROMPTS = {
-    "structured_json": {
-        "system": (
-            "You generate study plans. Respond ONLY with a JSON object "
-            "matching the required schema — no prose, no markdown fences, "
-            "no commentary before or after the JSON."
-        ),
-        "temperature": 0.4,
-    },
-    "text_parsing": {
-        "system": (
-            "You are a text-parsing assistant. Given messy, unstructured "
-            "notes or a passage of text, extract the key facts and return "
-            "them as a clean markdown bullet list: one fact per line, no "
-            "editorializing, no information that isn't in the source text."
-        ),
-        "temperature": 0.2,
-    },
-    "code_generation": {
-        "system": (
-            "You are a precise code-generation assistant. Given a task "
-            "description, output only a single, correct, well-commented "
-            "code block in the most appropriate language, followed by a "
-            "1-2 sentence explanation of how it works. Prefer standard "
-            "library solutions unless told otherwise."
-        ),
-        "temperature": 0.2,
-    },
-    "summarization": {
-        "system": (
-            "You summarize documents for students studying for an exam. "
-            "Given a passage, return: a 2-sentence overview, then 3-5 "
-            "bullet points of the most testable facts. Be faithful to the "
-            "source — never add information that isn't present in it."
-        ),
-        "temperature": 0.3,
-    },
-}
-
-STUDY_PLAN_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "topic": {"type": "string"},
-        "difficulty": {"type": "string", "enum": ["beginner", "intermediate", "advanced"]},
-        "estimated_minutes": {"type": "integer"},
-        "steps": {"type": "array", "items": {"type": "string"}},
-    },
-    "required": ["topic", "difficulty", "estimated_minutes", "steps"],
-    "additionalProperties": False,
-}
 
 
 class StudyPlan(BaseModel):
@@ -450,6 +357,7 @@ class ChatResponse(BaseModel):
     reply: str
     usage: dict
     latency_ms: int
+    moderated: bool = False
 
 
 class TitleRequest(BaseModel):
@@ -535,7 +443,26 @@ def chat(req: ChatRequest):
 
     session = chat_sessions[session_id]
     session["messages"].append({"role": "user", "content": req.message})
-    system_instruction = PERSONAS[session["persona"]]
+    system_instruction = build_system_instruction(session["persona"])
+
+    # --- Tone check, before the message ever reaches the model. -----------
+    # Harsh/abusive input never gets forwarded to the API: we short-circuit
+    # here with a de-escalation reply, log the event, and skip the model
+    # call entirely (zero tokens, zero cost, zero latency).
+    tone = check_tone(req.message)
+    if tone["flagged"]:
+        turn_count = sum(1 for m in session["messages"] if m["role"] == "user")
+        reply = moderated_response(tone["reasons"], turn_count)
+        session["messages"].append({"role": "assistant", "content": reply})
+        logger.info(json.dumps(log_moderation_event(session_id, tone["reasons"])))
+        zero_usage = {"prompt_tokens": 0, "completion_tokens": 0, "cost": 0.0}
+        return ChatResponse(
+            session_id=session_id,
+            reply=reply,
+            usage=zero_usage,
+            latency_ms=0,
+            moderated=True,
+        )
 
     start = time.time()
     try:
@@ -601,7 +528,23 @@ def chat_stream(req: ChatRequest):
         chat_sessions[session_id] = new_session(req.persona)
     session = chat_sessions[session_id]
     session["messages"].append({"role": "user", "content": req.message})
-    system_instruction = PERSONAS[session["persona"]]
+    system_instruction = build_system_instruction(session["persona"])
+
+    # Same local tone check as /api/chat, adapted to the SSE shape: emit
+    # the de-escalation reply as a single "delta" chunk (so the frontend's
+    # existing streaming renderer needs no special case) then "done" —
+    # the model is never called.
+    tone = check_tone(req.message)
+    if tone["flagged"]:
+        def moderated_generator():
+            turn_count = sum(1 for m in session["messages"] if m["role"] == "user")
+            reply = moderated_response(tone["reasons"], turn_count)
+            session["messages"].append({"role": "assistant", "content": reply})
+            logger.info(json.dumps(log_moderation_event(session_id, tone["reasons"])))
+            zero_usage = {"prompt_tokens": 0, "completion_tokens": 0, "cost": 0.0}
+            yield f"data: {json.dumps({'delta': reply})}\n\n"
+            yield f"data: {json.dumps({'done': True, 'session_id': session_id, 'usage': zero_usage, 'latency_ms': 0, 'moderated': True})}\n\n"
+        return StreamingResponse(moderated_generator(), media_type="text/event-stream")
 
     def event_generator():
         start = time.time()
@@ -635,7 +578,7 @@ def chat_stream(req: ChatRequest):
             session["usage"]["completion_tokens"] += usage["completion_tokens"]
             session["usage"]["cost"] = round(session["usage"]["cost"] + cost, 6)
             log_request(session_id, MODEL, {**usage, "cost": cost}, latency_ms, "stream")
-            yield f"data: {json.dumps({'done': True, 'session_id': session_id, 'usage': {**usage, 'cost': cost}, 'latency_ms': latency_ms})}\n\n"
+            yield f"data: {json.dumps({'done': True, 'session_id': session_id, 'usage': {**usage, 'cost': cost}, 'latency_ms': latency_ms, 'moderated': False})}\n\n"
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)})}\n\n"
 
@@ -662,7 +605,7 @@ def regenerate(req: RegenerateRequest):
     if not messages or messages[-1]["role"] != "user":
         raise HTTPException(status_code=400, detail="Nothing to regenerate — no prior user message.")
 
-    system_instruction = PERSONAS[session["persona"]]
+    system_instruction = build_system_instruction(session["persona"])
     start = time.time()
     try:
         response = client.models.generate_content(
@@ -815,11 +758,7 @@ def generate_title(session_id: str):
             model=MODEL,
             contents=build_contents(convo),
             config=types.GenerateContentConfig(
-                system_instruction=(
-                    "Generate a concise 3-5 word title summarizing this "
-                    "conversation. Respond with only the title, no "
-                    "punctuation or quotes."
-                ),
+                system_instruction=TITLE_SYSTEM_PROMPT,
                 temperature=0.3,
                 max_output_tokens=20,
             ),
