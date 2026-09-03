@@ -21,3 +21,6 @@ data/chroma_db/
 # OS files
 .DS_Store
 Thumbs.db
+# Node / React
+node_modules/
+dist/
