@@ -1,0 +1,272 @@
+[
+    {
+        "conversation_id": "conversation_1",
+        "session_id": "day20_conversation_1",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "Who is Mr. Bingley?",
+                "rewritten_question": "Who is Mr. Bingley?",
+                "answer": "Based on the provided documents, Mr. Bingley is a newcomer to the neighborhood whom Mrs. Bennet urges her husband to visit in order to secure a good establishment or marriage prospect for one of their daughters. He is also someone who dines with \"four-and-twenty families\" and interacts with characters like Elizabeth and her mother.",
+                "sources": "- document.docx, page None, chunk 158\n- document.docx, page None, chunk 6\n- document.docx, page None, chunk 159"
+            },
+            {
+                "turn": 2,
+                "question": "What is his relationship with Jane Bennet?",
+                "rewritten_question": "What is Mr. Bingley's relationship with Jane Bennet?",
+                "answer": "Based on the provided documents, there is an expectation held by Mrs. Bennet and discussed with Lady Lucas that Jane will soon be married to Mr. Bingley.",
+                "sources": "- document.docx, page None, chunk 386\n- native.pdf, page 3, chunk 11\n- document.docx, page None, chunk 11"
+            },
+            {
+                "turn": 3,
+                "question": "How does his friendship with Mr. Darcy affect this?",
+                "rewritten_question": "How does Mr. Bingley's friendship with Mr. Darcy affect his relationship with Jane Bennet?",
+                "answer": "Based on the provided documents, there is no information explaining how Mr. Bingley's friendship with Mr. Darcy affects his relationship with Jane Bennet. Therefore, this information is not available in the provided documents.",
+                "sources": "- document.docx, page None, chunk 316\n- document.docx, page None, chunk 191\n- document.docx, page None, chunk 62"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_2",
+        "session_id": "day20_conversation_2",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "Who is Elizabeth Bennet?",
+                "rewritten_question": "Who is Elizabeth Bennet?",
+                "answer": "Based on the provided documents, there is mention of a \"Miss Bennet\" who is very ill and staying with Mr. Bingley, and Mrs. Bennet speaks of her having a very sweet temper. However, the provided documents do not contain specific information defining who Elizabeth Bennet is.",
+                "sources": "- document.docx, page None, chunk 150\n- document.txt, page None, chunk 10\n- document.docx, page None, chunk 151"
+            },
+            {
+                "turn": 2,
+                "question": "How does she initially feel about Mr. Darcy?",
+                "rewritten_question": "How does Elizabeth Bennet initially feel about Mr. Darcy?",
+                "answer": "Based on the provided documents, there is no specific information regarding how Elizabeth Bennet initially feels about Mr. Darcy.",
+                "sources": "- document.docx, page None, chunk 117\n- document.docx, page None, chunk 391\n- document.docx, page None, chunk 206"
+            },
+            {
+                "turn": 3,
+                "question": "What causes her opinion of him to change?",
+                "rewritten_question": "What causes Elizabeth Bennet's opinion of Mr. Darcy to change?",
+                "answer": "Based on the provided documents, there is no information explaining what causes Elizabeth Bennet's opinion of Mr. Darcy to change.",
+                "sources": "- document.docx, page None, chunk 117\n- document.docx, page None, chunk 206\n- document.docx, page None, chunk 391"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_3",
+        "session_id": "day20_conversation_3",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "Who is Mr. Wickham?",
+                "rewritten_question": "Who is Mr. Wickham?",
+                "answer": "Based on the provided documents, Mr. Wickham is a stranger who recently appeared in Meryton and walked up and down the street, causing Kitty and Lydia to find the local officers \"stupid, disagreeable fellows\" in comparison. He is someone who has spoken about Mr. Darcy—expressing that Darcy's behavior to him has been scandalous and that Darcy disappoints the hopes and disgraces the memory of his father—and he is to be invited to dine with the Phillipses.",
+                "sources": "- document.docx, page None, chunk 300\n- document.docx, page None, chunk 280\n- document.docx, page None, chunk 297"
+            },
+            {
+                "turn": 2,
+                "question": "What does he claim about Mr. Darcy?",
+                "rewritten_question": "What does Mr. Wickham claim about Mr. Darcy?",
+                "answer": "Based on the provided documents, Mr. Wickham claims that Mr. Darcy has used him ill (treating him badly) and that Darcy's behavior toward him has been scandalous.",
+                "sources": "- document.docx, page None, chunk 368\n- document.docx, page None, chunk 373\n- document.docx, page None, chunk 367"
+            },
+            {
+                "turn": 3,
+                "question": "How does Elizabeth react to his story?",
+                "rewritten_question": "How does Elizabeth Bennet react to Mr. Wickham's story about Mr. Darcy?",
+                "answer": "Based on the provided documents, the text does not detail Elizabeth's initial reaction to Mr. Wickham's story (as that conversation happened prior to Document 1). However, Document 1 states that Elizabeth related to Jane what had passed between Mr. Wickham and herself.",
+                "sources": "- document.docx, page None, chunk 327\n- document.docx, page None, chunk 117\n- document.docx, page None, chunk 206"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_4",
+        "session_id": "day20_conversation_4",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "Who is Jane Bennet?",
+                "rewritten_question": "Who is Jane Bennet?",
+                "answer": "Based on the provided documents, Jane Bennet is described as a \"very sweet girl\" for whom the speaker has an \"excessive regard\" (Document 2). She is also the daughter of Mr. and Mrs. Bennet (Documents 1 and 2), and it is mentioned that her mother expects her to soon be married to Mr. Bingley (Document 3).",
+                "sources": "- document.docx, page None, chunk 150\n- document.docx, page None, chunk 129\n- document.docx, page None, chunk 386"
+            },
+            {
+                "turn": 2,
+                "question": "What does she think about Mr. Bingley's feelings?",
+                "rewritten_question": "What does Jane Bennet think about Mr. Bingley's feelings?",
+                "answer": "Based on the provided documents, Jane was as much gratified by Mr. Bingley's attentions (such as dancing with her twice and being distinguished by his sisters) as her mother could be, though she experienced this pleasure in a quieter way.",
+                "sources": "- document.docx, page None, chunk 386\n- document.docx, page None, chunk 35\n- document.docx, page None, chunk 151"
+            },
+            {
+                "turn": 3,
+                "question": "Why does Elizabeth have a different view?",
+                "rewritten_question": "Why does Elizabeth Bennet have a different view of Mr. Bingley's feelings compared to Jane?",
+                "answer": "Based on the provided documents, there is no mention of Elizabeth Bennet having a different view of Mr. Bingley's feelings compared to Jane; the text only states that \"Elizabeth felt Jane's pleasure\" regarding the attentions Jane received from Mr. Bingley and his sisters. Therefore, the specific information to answer why Elizabeth would have a *different* view is not available in the provided documents.",
+                "sources": "- document.docx, page None, chunk 35\n- document.docx, page None, chunk 386\n- document.docx, page None, chunk 11"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_5",
+        "session_id": "day20_conversation_5",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "What is Longbourn?",
+                "rewritten_question": "What is Longbourn?",
+                "answer": "Based on the provided documents, Longbourn is a village located only one mile from Meryton (Document 1) and is also associated with \"Longbourn House\" and the \"Longbourn party\" (Documents 2 and 3).",
+                "sources": "- document.docx, page None, chunk 98\n- document.docx, page None, chunk 326\n- document.docx, page None, chunk 403"
+            },
+            {
+                "turn": 2,
+                "question": "Who lives there?",
+                "rewritten_question": "Who lives in Longbourn?",
+                "answer": "Based on the provided documents, the Bennet family lives in Longbourn (as implied by the mention that the Bennets lived \"within a short walk of Longbourn\" in Document 3, and previous context establishing Longbourn as their estate/home). Additionally, Document 1 mentions \"the young ladies\" and their family (Catherine and Lydia) frequenting Meryton from Longbourn.",
+                "sources": "- document.docx, page None, chunk 98\n- document.docx, page None, chunk 326\n- document.docx, page None, chunk 56"
+            },
+            {
+                "turn": 3,
+                "question": "How is the household connected to Mr. Bingley?",
+                "rewritten_question": "How is the Bennet family household connected to Mr. Bingley?",
+                "answer": "Based on the provided documents, Mr. Bennet was among the earliest to wait on (visit) Mr. Bingley. Additionally, Mrs. Bennet's primary goal in life was to get her daughters married, which connects to the arrival of Mr. Bingley in the neighborhood.",
+                "sources": "- document.docx, page None, chunk 11\n- document.txt, page None, chunk 11\n- native.pdf, page 3, chunk 11"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_6",
+        "session_id": "day20_conversation_6",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "Who is Mr. Collins?",
+                "rewritten_question": "Who is Mr. Collins?",
+                "answer": "Based on the provided documents, Mr. Collins is a man who:\n* Was not a sensible man, having had little assistance from education or society and spending the greatest part of his life under the guidance of an illiterate and miserly father.\n* Attended a university just to keep the necessary terms without forming useful acquaintances.\n* Originally had great humility of manner due to the subjection in which his father brought him up (though it has since been somewhat counteracted).\n* Came prepared to admire the young ladies and also praised the hall, the dining-room, and all its furniture.\n* Had a successful \"conference\" regarding love/marriage prospects involving Elizabeth and received warm congratulations from Mrs. Bennet.",
+                "sources": "- document.docx, page None, chunk 262\n- document.docx, page None, chunk 433\n- document.docx, page None, chunk 244"
+            },
+            {
+                "turn": 2,
+                "question": "What is his connection to the Bennet family?",
+                "rewritten_question": "What is Mr. Collins's connection to the Bennet family?",
+                "answer": "Based on the provided documents, Mr. Collins's connection to the Bennet family is that he is the man set to inherit their estate, Longbourn, which Mrs. Bennet rails against because the estate was settled away from her family of five daughters.",
+                "sources": "- document.docx, page None, chunk 269\n- document.docx, page None, chunk 230\n- document.docx, page None, chunk 241"
+            },
+            {
+                "turn": 3,
+                "question": "How does Elizabeth respond to his proposal?",
+                "rewritten_question": "How does Elizabeth respond to Mr. Collins's proposal?",
+                "answer": "Based on the provided documents, Elizabeth vows that she will not have Mr. Collins and refuses him. When her father asks if it is true that Mr. Collins has made her an offer of marriage, she is summoned to the library to discuss the matter (though her full verbal response to the proposal itself is cut off in the text).",
+                "sources": "- document.docx, page None, chunk 437\n- document.docx, page None, chunk 341\n- document.docx, page None, chunk 439"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_7",
+        "session_id": "day20_conversation_7",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "Who is Charlotte Lucas?",
+                "rewritten_question": "Who is Charlotte Lucas?",
+                "answer": "Based on the provided documents, Charlotte Lucas is:\n\n* Lady Lucas's daughter and one of the Lucas girls (described as a very good sort of girl, though Mrs. Bennet considers her \"very plain\").\n* A sensible, intelligent young woman of about twenty-seven.\n* Elizabeth Bennet's intimate and particular friend.",
+                "sources": "- document.docx, page None, chunk 160\n- document.docx, page None, chunk 444\n- document.docx, page None, chunk 58"
+            },
+            {
+                "turn": 2,
+                "question": "What is her relationship with Elizabeth?",
+                "rewritten_question": "What is Charlotte Lucas's relationship with Elizabeth Bennet?",
+                "answer": "Based on the provided documents, Charlotte Lucas is Elizabeth's intimate friend.",
+                "sources": "- document.docx, page None, chunk 58\n- document.docx, page None, chunk 386\n- document.docx, page None, chunk 226"
+            },
+            {
+                "turn": 3,
+                "question": "Why does her marriage become important to Elizabeth?",
+                "rewritten_question": "Why does Charlotte Lucas's marriage become important to Elizabeth Bennet?",
+                "answer": "Based on the provided documents, there is no mention of Charlotte Lucas's marriage or why it becomes important to Elizabeth Bennet. Therefore, this information is not available in the provided documents.",
+                "sources": "- document.docx, page None, chunk 58\n- document.docx, page None, chunk 388\n- document.docx, page None, chunk 386"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_8",
+        "session_id": "day20_conversation_8",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "What kind of person is Lady Catherine?",
+                "rewritten_question": "What kind of person is Lady Catherine?",
+                "answer": "Based on the provided documents, opinions about Lady Catherine vary:\n\n* **Mr. Collins** views her favorably, noting that she appreciates \"little delicate compliments\" and that he is happy to offer them to her. \n* **Wickham**, however, suspects she is \"an arrogant, conceited woman\" and recalls that her manners were \"dictatorial and insolent.\" He also notes that she has the reputation of being remarkably sensible and clever.",
+                "sources": "- document.docx, page None, chunk 254\n- document.docx, page None, chunk 322\n- document.docx, page None, chunk 252"
+            },
+            {
+                "turn": 2,
+                "question": "How does she treat Elizabeth?",
+                "rewritten_question": "How does Lady Catherine treat Elizabeth?",
+                "answer": "Based on the provided documents, there is no information available about how Lady Catherine treats Elizabeth.",
+                "sources": "- document.docx, page None, chunk 384\n- document.docx, page None, chunk 238\n- document.docx, page None, chunk 254"
+            },
+            {
+                "turn": 3,
+                "question": "Why does she object to Elizabeth's relationship with Mr. Darcy?",
+                "rewritten_question": "Why does Lady Catherine object to Elizabeth's relationship with Mr. Darcy?",
+                "answer": "Based on the provided documents, there is no information available about why Lady Catherine objects to Elizabeth's relationship with Mr. Darcy.",
+                "sources": "- document.docx, page None, chunk 327\n- document.docx, page None, chunk 370\n- document.docx, page None, chunk 191"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_9",
+        "session_id": "day20_conversation_9",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "What happens at the Netherfield ball?",
+                "rewritten_question": "What happens at the Netherfield ball?",
+                "answer": "Based on the provided documents, there is no description of what actually happens *at* the Netherfield ball. The text only mentions the anticipation of the ball, noting that the prospect of it \"was extremely agreeable to every female of the family\" and that Mrs. Bennet chose to consider it given in compliment to her eldest daughter.",
+                "sources": "- document.docx, page None, chunk 333\n- document.docx, page None, chunk 2\n- document.docx, page None, chunk 203"
+            },
+            {
+                "turn": 2,
+                "question": "Who does Elizabeth dance with?",
+                "rewritten_question": "Who does Elizabeth dance with at the Netherfield ball?",
+                "answer": "Based on the provided documents, there is no mention of who Elizabeth dances with at the Netherfield ball. The text only discusses the planning and anticipation of the ball, but does not describe the events that take place during it.",
+                "sources": "- document.docx, page None, chunk 333\n- document.docx, page None, chunk 203\n- document.docx, page None, chunk 166"
+            },
+            {
+                "turn": 3,
+                "question": "How does Mr. Darcy behave toward her?",
+                "rewritten_question": "How does Mr. Darcy behave toward Elizabeth Bennet?",
+                "answer": "Based on the provided documents, Mr. Darcy behaves toward Elizabeth Bennet in the following ways:\n\n* He says very little to her.\n* When she arrives alone after walking a long distance, he is divided between admiring the brilliancy her exercise gave to her complexion and having doubts about whether the occasion justified her coming so far alone.\n* When Miss Bingley invites Elizabeth to take a turn about the room and Mr. Darcy is subsequently invited to join or look up, he is awake to the novelty of the attention and unconsciously closes his book.",
+                "sources": "- document.docx, page None, chunk 117\n- document.docx, page None, chunk 206\n- document.docx, page None, chunk 370"
+            }
+        ]
+    },
+    {
+        "conversation_id": "conversation_10",
+        "session_id": "day20_conversation_10",
+        "turns": [
+            {
+                "turn": 1,
+                "question": "What role does Lydia Bennet play in the story?",
+                "rewritten_question": "What role does Lydia Bennet play in the story?",
+                "answer": "Based on the provided documents, Lydia Bennet is one of Mr. Bennet's daughters (along with her sister Catherine). During a scene where Mr. Collins is reading to the family, she causes an interruption with her trifling amusements, for which her mother and sisters apologetically promise it will not occur again. Additionally, at a ball, she and Catherine are fortunate enough never to be without partners, which is all they care about at that stage. \n\nThe provided documents do not contain a comprehensive description of her overall role in the story beyond these specific instances.",
+                "sources": "- document.docx, page None, chunk 260\n- document.txt, page None, chunk 10\n- document.docx, page None, chunk 36"
+            },
+            {
+                "turn": 2,
+                "question": "What problem does her relationship with Mr. Wickham create?",
+                "rewritten_question": "What problem does Lydia Bennet's relationship with Mr. Wickham create in the story?",
+                "answer": "Based on the provided documents, there is no mention of Lydia Bennet's relationship with Mr. Wickham or any problems it creates. Therefore, this information is not available in the provided documents.",
+                "sources": "- document.docx, page None, chunk 260\n- document.txt, page None, chunk 10\n- document.docx, page None, chunk 36"
+            },
+            {
+                "turn": 3,
+                "question": "How does this affect the Bennet family?",
+                "rewritten_question": "How does Lydia Bennet's relationship with Mr. Wickham affect the Bennet family?",
+                "answer": "Based on the provided documents, there is no mention of Lydia Bennet's relationship with Mr. Wickham or how it affects the Bennet family. Therefore, this information is not available in the provided documents.",
+                "sources": "- document.docx, page None, chunk 260\n- document.txt, page None, chunk 10\n- document.docx, page None, chunk 230"
+            }
+        ]
+    }
+]
