@@ -1,0 +1,48 @@
+Machine Learning and Retrieval-Augmented Generation
+Machine learning is a branch of artificial intelligence in which computers learn patterns from data and use
+those patterns to make predictions or decisions. The main types of machine learning are supervised learning,
+unsupervised learning, and reinforcement learning.
+Supervised learning uses labeled training data. Each training example contains an input and a known target
+output. Common supervised learning tasks include classification and regression. Classification predicts a
+category, while regression predicts a continuous numerical value.
+Unsupervised learning works with data that does not have labeled target values. It is often used to discover
+hidden patterns or groups in data. Clustering is a common unsupervised learning technique in which similar
+data points are grouped together.
+A Support Vector Machine, or SVM, is a supervised machine learning algorithm. It can be used for
+classification and regression. For classification, an SVM attempts to find a decision boundary that separates
+different classes. The algorithm focuses on important training examples called support vectors. One
+advantage of SVMs is that they can work well in high-dimensional spaces. A disadvantage is that training can
+become expensive for very large datasets.
+Natural Language Processing, or NLP, is a field of artificial intelligence that focuses on processing and
+understanding human language. NLP applications include text classification, machine translation, question
+answering, summarization, and chatbots.
+Retrieval-Augmented Generation, commonly called RAG, combines information retrieval with text generation.
+Instead of relying only on information stored in a language model, a RAG system first retrieves relevant
+information from an external knowledge source. The retrieved information is then provided to the language
+model as context for generating an answer.
+A typical RAG pipeline has several stages. First, documents are loaded and divided into smaller pieces called
+chunks. Each chunk is converted into a numerical representation called an embedding. Embeddings allow
+semantically similar pieces of text to be compared using vector similarity.
+A vector database stores embeddings and allows a system to search for chunks that are relevant to a user's
+question. FAISS is a library designed for efficient similarity search over dense vectors. During retrieval, the
+user's question is also converted into an embedding. The system compares the query embedding with stored
+embeddings and returns the most relevant chunks.
+Keyword-based retrieval can also be used in a RAG system. BM25 is a traditional information retrieval
+method that ranks documents based on the occurrence and importance of query terms. BM25 can be useful
+when exact keywords or technical terms are important.
+Hybrid retrieval combines multiple retrieval strategies. For example, a system can combine BM25 keyword
+retrieval with vector similarity retrieval. Reciprocal Rank Fusion, or RRF, can then combine the rankings from
+the different retrieval methods into one final ranking.
+A conversational RAG system keeps track of previous messages in a conversation. This allows a user to ask
+follow-up questions such as "What are its advantages?" without repeating the topic. The system can rewrite a
+follow-up question into a standalone question before retrieving information. This improves retrieval because
+the rewritten question contains the necessary context.
+Contextual compression is a retrieval technique that reduces unnecessary information before the final answer
+is generated. It attempts to keep the parts of retrieved documents that are most relevant to the user's
+question.
+Source citation is another important part of a RAG application. After retrieving documents, the system can
+return information about the source file and page associated with the retrieved chunks. This helps users
+understand where an answer came from and makes the system easier to verify.
+A good RAG system should answer questions using retrieved context and avoid inventing information that is
+not supported by the available documents. If the required information is not present in the knowledge base,
+the system should clearly state that it does not know the answer
