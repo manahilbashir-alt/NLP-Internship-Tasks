@@ -1,0 +1,46 @@
+# --- Python ---
+venv/
+venv17/
+venv18/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+
+# --- Environment / secrets ---
+.env
+*.env
+
+# --- Node / React frontend ---
+node_modules/
+dist/
+frontend/.vite/
+npm-debug.log*
+
+# --- Generated data / large artifacts ---
+backend/data/structured.md
+backend/data/images/
+backend/data/uploads/
+backend/vectorstores/FAISS_db/
+backend/chunking/chunks.json
+backend/embeddings/*/embeddings.npy
+backend/embeddings/*/chunk_ids.json
+
+# --- Evaluation outputs (generated, not source) ---
+backend/evaluation/results.json
+backend/evaluation/generation_results.json
+
+# --- OS / editor cruft ---
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# --- Logs ---
+*.log
+*.webm
+*.wav
+*.mp3
+models/
+__pycache__/

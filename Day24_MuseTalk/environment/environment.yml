@@ -1,0 +1,17 @@
+name: musetalk
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - torch==2.0.1
+      - torchvision==0.15.2
+      - torchaudio==2.0.2
+      - openmim
+      - gTTS
+      - gdown
+      - huggingface_hub
+      # remaining deps come from MuseTalk's own requirements.txt at clone time

@@ -1,0 +1,57 @@
+﻿# Machine Learning Basics
+
+## Introduction
+
+Machine learning is a branch of artificial intelligence that enables computers to learn patterns from data and make predictions or decisions without being explicitly programmed for every task.
+
+## Supervised Learning
+
+Supervised learning uses labeled training data. The model learns a relationship between input features and target outputs.
+
+Common supervised learning algorithms include Linear Regression, Logistic Regression, Decision Trees, Support Vector Machines, and K-Nearest Neighbors.
+
+## Unsupervised Learning
+
+Unsupervised learning works with data that does not have labeled target values. The goal is to discover hidden patterns or structures.
+
+Clustering and dimensionality reduction are common unsupervised learning techniques.
+
+## Support Vector Machine
+
+A Support Vector Machine (SVM) is a supervised learning algorithm used mainly for classification and regression.
+
+SVM attempts to find a decision boundary that separates different classes while maximizing the margin between them.
+
+One advantage of SVM is that it can work effectively in high-dimensional feature spaces. A disadvantage is that training can become expensive for very large datasets.
+
+## Retrieval Augmented Generation
+
+Retrieval Augmented Generation (RAG) combines information retrieval with language generation.
+
+First, relevant documents are retrieved from a knowledge base. The retrieved context is then provided to a language model so that it can generate an answer grounded in the available information.
+
+RAG can reduce hallucinations and allows a system to answer questions using external or private documents.
+
+## Vector Embeddings
+
+An embedding converts text into a numerical vector representation. Texts with similar meanings tend to have similar vector representations.
+
+Vector databases can store these embeddings and retrieve documents based on semantic similarity.
+
+## BM25
+
+BM25 is a lexical information retrieval algorithm. It ranks documents according to how relevant their words are to a query.
+
+BM25 is useful when exact terms or keywords are important.
+
+## Hybrid Retrieval
+
+Hybrid retrieval combines multiple retrieval strategies, such as BM25 keyword retrieval and vector semantic retrieval.
+
+Reciprocal Rank Fusion (RRF) can combine the rankings produced by different retrievers into a single ranking.
+
+## Conversational RAG
+
+Conversational RAG maintains conversation history so that follow-up questions can be understood in context.
+
+For example, after asking "What is SVM?", a user may ask "What are its disadvantages?" A question rewriting step can transform the follow-up into a standalone question before retrieval.

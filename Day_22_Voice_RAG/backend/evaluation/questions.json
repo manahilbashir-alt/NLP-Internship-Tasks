@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "question": "What is SVM?",
+    "expected_fact": "Support Vector Machine is a supervised learning algorithm used for classification and regression",
+    "expected_page_hint": 54
+  },
+  {
+    "id": 2,
+    "question": "What is supervised learning?",
+    "expected_fact": "learning a function that maps inputs to outputs based on example input-output pairs / labeled data",
+    "expected_page_hint": 17
+  },
+  {
+    "id": 3,
+    "question": "What is unsupervised learning?",
+    "expected_fact": "learning from unlabeled data to find hidden patterns or structure without direct feedback",
+    "expected_page_hint": 18
+  },
+  {
+    "id": 4,
+    "question": "What is the difference between supervised and unsupervised learning?",
+    "expected_fact": "supervised uses labeled data with feedback; unsupervised uses unlabeled data, finds patterns without feedback",
+    "expected_page_hint": 18
+  },
+  {
+    "id": 5,
+    "question": "What is reinforcement learning?",
+    "expected_fact": "an agent learns by interacting with an environment and receiving rewards or penalties",
+    "expected_page_hint": null
+  },
+  {
+    "id": 6,
+    "question": "What is overfitting?",
+    "expected_fact": "a model learns the training data too closely, including noise, and performs poorly on new data",
+    "expected_page_hint": null
+  },
+  {
+    "id": 7,
+    "question": "What is a decision tree?",
+    "expected_fact": "a tree-structured model that splits data based on feature values to reach a decision",
+    "expected_page_hint": null
+  },
+  {
+    "id": 8,
+    "question": "What is the k-nearest neighbors algorithm?",
+    "expected_fact": "classifies a new point based on the majority class among its k closest neighbors",
+    "expected_page_hint": null
+  },
+  {
+    "id": 9,
+    "question": "What is linear regression?",
+    "expected_fact": "models the relationship between input and output as a straight line to predict continuous values",
+    "expected_page_hint": null
+  },
+  {
+    "id": 10,
+    "question": "What is logistic regression?",
+    "expected_fact": "used for classification, predicts probability of a categorical outcome",
+    "expected_page_hint": null
+  },
+  {
+    "id": 11,
+    "question": "What are the advantages of SVM?",
+    "expected_fact": "effective in high-dimensional spaces, memory efficient, works well with clear margin of separation",
+    "expected_page_hint": 57
+  },
+  {
+    "id": 12,
+    "question": "What is a confusion matrix?",
+    "expected_fact": "a table showing true positives, true negatives, false positives, false negatives for classification results",
+    "expected_page_hint": null
+  },
+  {
+    "id": 13,
+    "question": "What is clustering?",
+    "expected_fact": "an unsupervised technique that groups similar data points together",
+    "expected_page_hint": null
+  },
+  {
+    "id": 14,
+    "question": "What is the K-means algorithm?",
+    "expected_fact": "partitions data into k clusters by minimizing distance to cluster centroids",
+    "expected_page_hint": null
+  },
+  {
+    "id": 15,
+    "question": "What is a genetic algorithm?",
+    "expected_fact": "an optimization technique inspired by natural selection, using selection, crossover, and mutation",
+    "expected_page_hint": 120
+  },
+  {
+    "id": 16,
+    "question": "What is cross-validation?",
+    "expected_fact": "a technique to evaluate model performance by splitting data into multiple train/test folds",
+    "expected_page_hint": null
+  },
+  {
+    "id": 17,
+    "question": "What is the bias-variance tradeoff?",
+    "expected_fact": "balancing underfitting (high bias) against overfitting (high variance)",
+    "expected_page_hint": null
+  },
+  {
+    "id": 18,
+    "question": "What is a neural network?",
+    "expected_fact": "a model made of interconnected nodes/layers inspired by the brain, used to learn patterns from data",
+    "expected_page_hint": null
+  },
+  {
+    "id": 19,
+    "question": "What is precision and recall?",
+    "expected_fact": "precision measures correctness of positive predictions; recall measures how many actual positives were found",
+    "expected_page_hint": null
+  },
+  {
+    "id": 20,
+    "question": "What is PCA (Principal Component Analysis)?",
+    "expected_fact": "a dimensionality reduction technique that transforms data into fewer components capturing maximum variance",
+    "expected_page_hint": null
+  }
+]
