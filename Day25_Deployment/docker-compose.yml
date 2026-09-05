@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      TTS_SERVICE_URL: http://tts:8004/api/tts/speak-one
+    depends_on:
+      - tts
+    restart: unless-stopped
+
+  tts:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.tts
+    ports:
+      - "8004:8004"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE: http://localhost:8000
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

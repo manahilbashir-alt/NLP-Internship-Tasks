@@ -1,0 +1,21 @@
+# --- secrets ---
+backend/.env
+frontend/.env
+frontend/.env.local
+frontend/.env.production
+
+# --- backend ---
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.egg-info/
+backend/.pytest_cache/
+backend/data/chroma_db/
+
+# --- frontend ---
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# --- misc ---
+.DS_Store
+*.log
