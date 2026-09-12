@@ -43,12 +43,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # weights on the first real user request.
 ENV HF_HOME=/app/.cache/huggingface \
     TRANSFORMERS_CACHE=/app/.cache/huggingface \
-    COQUI_TOS_AGREED=1 \
-    WHISPER_MODEL_NAME=small \
-    XTTS_MODEL_NAME=tts_models/multilingual/multi-dataset/xtts_v2 \
+    FASTER_WHISPER_CACHE=/app/.cache/faster-whisper \
+    WHISPER_MODEL_NAME=small.en \
     EMBEDDING_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
-
-RUN mkdir -p /app/.cache/huggingface
+RUN mkdir -p /app/.cache/huggingface && \
+    python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2', cache_folder='/app/.cache/huggingface')" && \
+    python -c "from faster_whisper import WhisperModel; WhisperModel('small.en', device='cpu', compute_type='int8', download_root='/app/.cache/faster-whisper')"
 
 
 # ---- App code -------------------------------------------------------

@@ -1,32 +1,25 @@
-"""
-DAY 23 - TTS SERVICE (Step 4: real streaming endpoint)
-
-Two endpoints now exist:
-
-    POST /api/tts/speak
-        Non-streaming. Waits for the ENTIRE text to be
-        synthesized, then sends back one audio file.
-
-    POST /api/tts/speak-stream
-        Streaming. Splits text into sentences, synthesizes
-        them one at a time, and sends each chunk's audio
-        as soon as it's ready -- instead of waiting for
-        everything to finish first.
-"""
-
 import re
 import tempfile
 import time
+import wave
+import logging
+
 from pathlib import Path
 
-from fastapi import FastAPI
+import torch
+import torchaudio
+
+from fastapi import FastAPI, Response
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from TTS.api import TTS
-import logging
-import wave
+
+
+# ============================================================
+# LOGGING
+# ============================================================
 
 logging.basicConfig(
     filename="tts_service.log",
@@ -34,132 +27,218 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
 )
 
-def get_wav_duration(path):
-    """Returns the duration of a WAV file in seconds."""
-    with wave.open(path, "rb") as f:
-        frames = f.getnframes()
-        rate = f.getframerate()
-        return frames / float(rate) if rate > 0 else 0
+
 # ============================================================
 # PATHS
 # ============================================================
 
 BACKEND_ROOT = Path(__file__).resolve().parent
-REFERENCE_VOICE = BACKEND_ROOT / "06_voice" / "reference_voice.wav"
 
-MODEL_NAME = "tts_models/multilingual/multi-dataset/xtts_v2"
+REFERENCE_VOICE = (
+    BACKEND_ROOT
+    / "06_voice"
+    / "reference_voice.wav"
+)
+
+MODEL_NAME = (
+    "tts_models/multilingual/multi-dataset/xtts_v2"
+)
 
 
 # ============================================================
-# LOAD MODEL ONCE, AT STARTUP
+# STARTUP
 # ============================================================
 
 print()
 print("=" * 75)
 print("STARTING TTS SERVICE")
 print("=" * 75)
-
 print()
-print(f"[tts] Reference voice: {REFERENCE_VOICE}")
-print(f"[tts] Loading XTTS model (this takes ~20 seconds)...")
+
+print(
+    f"[tts] Reference voice: {REFERENCE_VOICE}"
+)
+
+print(
+    "[tts] Loading XTTS model..."
+)
 
 tts_model = TTS(MODEL_NAME)
 
-print("[tts] Model loaded. Service is ready.")
+print(
+    "[tts] XTTS model loaded."
+)
 
+
+# ============================================================
+# CACHE SPEAKER CONDITIONING
+# ============================================================
+
+print()
+print("[tts] Computing speaker conditioning latents...")
+
+xtts_model = tts_model.synthesizer.tts_model
+
+gpt_cond_latent, speaker_embedding = (
+    xtts_model.get_conditioning_latents(
+        audio_path=[str(REFERENCE_VOICE)]
+    )
+)
+
+print(
+    "[tts] Speaker conditioning cached."
+)
+
+
+# ============================================================
+# FAST SYNTHESIS
+# ============================================================
+
+def synthesize_voice(text: str):
+
+    output = xtts_model.inference(
+        text=text,
+        language="en",
+        gpt_cond_latent=gpt_cond_latent,
+        speaker_embedding=speaker_embedding,
+        temperature=0.65,
+        length_penalty=1.0,
+        repetition_penalty=2.0,
+        top_k=50,
+        top_p=0.8,
+    )
+
+    wav = torch.tensor(
+        output["wav"]
+    ).unsqueeze(0)
+
+    temp_file = tempfile.NamedTemporaryFile(
+        delete=False,
+        suffix=".wav"
+    )
+
+    output_path = temp_file.name
+
+    temp_file.close()
+
+    torchaudio.save(
+        output_path,
+        wav.cpu(),
+        24000
+    )
+
+    return output_path
+
+
+# ============================================================
+# WAV DURATION
+# ============================================================
+
+def get_wav_duration(path):
+    import soundfile as sf
+
+    info = sf.info(path)
+    return info.duration
 
 # ============================================================
 # SENTENCE SPLITTER
 # ============================================================
 
-def clean_text_for_speech(text: str) -> str:
-    """
-    Strips markdown formatting that makes no sense spoken
-    aloud, WITHOUT removing any actual content -- nothing is
-    shortened or summarized here, only formatting symbols
-    are removed so the words themselves come through clean.
-
-    Examples:
-        "* **Goal:** Find patterns"    -> "Goal: Find patterns"
-        "1. First point"               -> "First point"
-        "# Heading"                    -> "Heading"
-        "`code`"                       -> "code"
-    """
+def clean_text_for_speech(text: str):
 
     cleaned = text
 
-    # Remove markdown bold/italic markers (**text**, *text*, _text_)
-    cleaned = re.sub(r"\*\*(.+?)\*\*", r"\1", cleaned)
-    cleaned = re.sub(r"\*(.+?)\*", r"\1", cleaned)
-    cleaned = re.sub(r"_(.+?)_", r"\1", cleaned)
+    cleaned = re.sub(
+        r"\*\*(.+?)\*\*",
+        r"\1",
+        cleaned
+    )
 
-    # Remove markdown headings (#, ##, ###...)
-    cleaned = re.sub(r"^#{1,6}\s*", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(
+        r"\*(.+?)\*",
+        r"\1",
+        cleaned
+    )
 
-    # Remove bullet markers at the start of a line (*, -, +)
-    cleaned = re.sub(r"^\s*[\*\-\+]\s+", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(
+        r"_(.+?)_",
+        r"\1",
+        cleaned
+    )
 
-    # Remove numbered list markers at the start of a line (1., 2), etc.)
-    cleaned = re.sub(r"^\s*\d+[\.\)]\s*", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(
+        r"^#{1,6}\s*",
+        "",
+        cleaned,
+        flags=re.MULTILINE
+    )
 
-    # Remove inline code backticks
+    cleaned = re.sub(
+        r"^\s*[-+*]\s+",
+        "",
+        cleaned,
+        flags=re.MULTILINE
+    )
+
+    cleaned = re.sub(
+        r"^\s*\d+[.)]\s*",
+        "",
+        cleaned,
+        flags=re.MULTILINE
+    )
+
     cleaned = cleaned.replace("`", "")
 
-    # Remove leftover markdown table pipes
-    cleaned = cleaned.replace("|", ", ")
+    cleaned = cleaned.replace(
+        "|",
+        ", "
+    )
 
-    # Collapse multiple blank lines/spaces into single spaces,
-    # since TTS reads based on sentence punctuation, not
-    # visual line breaks.
-    cleaned = re.sub(r"\n+", ". ", cleaned)
-    cleaned = re.sub(r"\s{2,}", " ", cleaned)
+    cleaned = re.sub(
+        r"\n+",
+        ". ",
+        cleaned
+    )
+
+    cleaned = re.sub(
+        r"\s{2,}",
+        " ",
+        cleaned
+    )
 
     return cleaned.strip()
 
 
-def split_into_sentences(text: str) -> list[str]:
-    """
-    Splits CLEANED text into sentences on '.', '!', '?'.
+def split_into_sentences(text: str):
 
-    Also merges any fragment shorter than 15 characters into
-    the next sentence, so short leftover pieces (like a bare
-    "2" from an old numbered list) don't become their own
-    tiny, wasteful synthesis request.
+    text = clean_text_for_speech(text)
 
-    Example:
-        "Hello. How are you?" -> ["Hello.", "How are you?"]
-    """
+    raw_sentences = re.split(
+        r"(?<=[.!?])\s+",
+        text.strip()
+    )
 
-    raw_sentences = re.split(r"(?<=[.!?])\s+", text.strip())
-    raw_sentences = [s.strip() for s in raw_sentences if s.strip()]
+    raw_sentences = [
+        s.strip()
+        for s in raw_sentences
+        if s.strip()
+    ]
 
-    # Merge very short fragments into the following sentence.
-    merged = []
-    buffer = ""
-
-    for sentence in raw_sentences:
-        candidate = (buffer + " " + sentence).strip() if buffer else sentence
-
-        if len(candidate) < 15:
-            buffer = candidate
-        else:
-            merged.append(candidate)
-            buffer = ""
-
-    if buffer:
-        if merged:
-            merged[-1] = (merged[-1] + " " + buffer).strip()
-        else:
-            merged.append(buffer)
-
-    return merged
+    return raw_sentences
 
 
 # ============================================================
-# FASTAPI APP
+# FASTAPI
 # ============================================================
 
-app = FastAPI(title="Day 23 TTS Service")
+app = FastAPI(
+    title="Day 25 XTTS Voice Service"
+)
+
+
+# ============================================================
+# CORS
+# ============================================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -175,6 +254,7 @@ app.add_middleware(
 # ============================================================
 
 class SpeakRequest(BaseModel):
+
     text: str
 
 
@@ -184,165 +264,163 @@ class SpeakRequest(BaseModel):
 
 @app.get("/")
 def root():
-    return {"status": "TTS service is running"}
+
+    return {
+        "status": "TTS service is running"
+    }
 
 
 # ============================================================
-# NON-STREAMING ENDPOINT (unchanged from before)
+# SPEAK ONE
 # ============================================================
-
-@app.post("/api/tts/speak")
-def speak(request: SpeakRequest):
-    """
-    Synthesizes the ENTIRE text as one audio file.
-    Caller must wait for everything before hearing anything.
-    """
-
-    text = request.text.strip()
-
-    if not text:
-        return {"error": "Text cannot be empty."}
-
-    print()
-    print(f"[tts] (non-streaming) Synthesizing: {text[:80]}...")
-
-    start = time.time()
-
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
-    output_path = temp_file.name
-    temp_file.close()
-
-    tts_model.tts_to_file(
-        text=text,
-        speaker_wav=str(REFERENCE_VOICE),
-        language="en",
-        file_path=output_path,
-    )
-
-    elapsed = time.time() - start
-    print(f"[tts] (non-streaming) Done in {elapsed:.1f}s")
-
-    return FileResponse(
-        path=output_path,
-        media_type="audio/wav",
-        filename="speech.wav",
-    )
-
-from fastapi import Response
 
 @app.post("/api/tts/speak-one")
-def speak_one(request: SpeakRequest):
-    text = request.text.strip()
-    if not text:
-        return {"error": "Text cannot be empty."}
+def speak_one(
+    request: SpeakRequest
+):
 
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav")
-    chunk_path = temp_file.name
-    temp_file.close()
+    text = request.text.strip()
+
+    if not text:
+
+        return {
+            "error": "Text cannot be empty."
+        }
+
+    print()
+    print(
+        f"[tts] Synthesizing: {text[:100]}..."
+    )
 
     start = time.time()
-    tts_model.tts_to_file(
-        text=text,
-        speaker_wav=str(REFERENCE_VOICE),
-        language="en",
-        file_path=chunk_path,
-    )
+
+    output_path = synthesize_voice(text)
+
     elapsed = time.time() - start
-    audio_duration = get_wav_duration(chunk_path)
-    rtf = elapsed / audio_duration if audio_duration > 0 else 0
+
+    audio_duration = get_wav_duration(
+        output_path
+    )
+
+    rtf = (
+        elapsed / audio_duration
+        if audio_duration > 0
+        else 0
+    )
+
+    print(
+        f"[tts] Done in {elapsed:.2f}s | "
+        f"audio={audio_duration:.2f}s | "
+        f"RTF={rtf:.2f}"
+    )
 
     logging.info(
-        f"TTS single-sentence | text_len={len(text)} | "
-        f"synth_time={elapsed:.2f}s | audio_duration={audio_duration:.2f}s | RTF={rtf:.2f}"
+        f"TTS | "
+        f"text_len={len(text)} | "
+        f"synth_time={elapsed:.2f}s | "
+        f"audio_duration={audio_duration:.2f}s | "
+        f"RTF={rtf:.2f}"
     )
 
-    with open(chunk_path, "rb") as f:
+    with open(
+        output_path,
+        "rb"
+    ) as f:
+
         audio_bytes = f.read()
 
-    return Response(content=audio_bytes, media_type="audio/wav")
+    return Response(
+        content=audio_bytes,
+        media_type="audio/wav"
+    )
+
 
 # ============================================================
-# STREAMING ENDPOINT (new)
+# STREAMING TTS
 # ============================================================
 
 @app.post("/api/tts/speak-stream")
-def speak_stream(request: SpeakRequest):
-    """
-    Splits text into sentences and synthesizes them ONE AT
-    A TIME, sending each chunk's audio bytes as soon as it's
-    ready -- instead of waiting for the whole answer.
-
-    The response is a sequence of complete WAV files, one
-    per sentence, sent back to back. The frontend reads them
-    one at a time as they arrive.
-    """
+def speak_stream(
+    request: SpeakRequest
+):
 
     text = request.text.strip()
 
     if not text:
-        return {"error": "Text cannot be empty."}
 
-    sentences = split_into_sentences(text)
+        return {
+            "error": "Text cannot be empty."
+        }
+
+    sentences = split_into_sentences(
+        text
+    )
 
     print()
-    print(f"[tts] (streaming) {len(sentences)} sentence(s) to synthesize")
-    logging.info(f"TTS stream request started | {len(sentences)} sentences | text_len={len(text)} chars")
+    print(
+        f"[tts] Streaming "
+        f"{len(sentences)} sentence(s)"
+    )
 
     def audio_chunk_generator():
-        """
-        This function runs DURING the response -- it produces
-        audio chunks one at a time, and each one is sent to
-        the caller immediately, without waiting for the rest.
-        """
 
-        for i, sentence in enumerate(sentences, start=1):
+        for i, sentence in enumerate(
+            sentences,
+            start=1
+        ):
 
             start = time.time()
 
-            print(f"[tts] (streaming) Synthesizing chunk {i}: "
-                  f"{sentence[:60]}...")
-
-            temp_file = tempfile.NamedTemporaryFile(
-                delete=False, suffix=".wav"
-            )
-            chunk_path = temp_file.name
-            temp_file.close()
-
-            tts_model.tts_to_file(
-                text=sentence,
-                speaker_wav=str(REFERENCE_VOICE),
-                language="en",
-                file_path=chunk_path,
+            print(
+                f"[tts] Chunk {i}: "
+                f"{sentence[:70]}..."
             )
 
-            elapsed = time.time() - start
-            audio_duration = get_wav_duration(chunk_path)
-            rtf = elapsed / audio_duration if audio_duration > 0 else 0
+            output_path = synthesize_voice(
+                sentence
+            )
 
-            print(f"[tts] (streaming) Chunk {i} ready in {elapsed:.1f}s "
-                  f"(audio: {audio_duration:.1f}s, RTF: {rtf:.2f})")
+            elapsed = (
+                time.time() - start
+            )
 
-            logging.info(
-                f"TTS chunk {i} | text_len={len(sentence)} chars | "
-                f"synth_time={elapsed:.2f}s | audio_duration={audio_duration:.2f}s | "
+            audio_duration = (
+                get_wav_duration(
+                    output_path
+                )
+            )
+
+            rtf = (
+                elapsed / audio_duration
+                if audio_duration > 0
+                else 0
+            )
+
+            print(
+                f"[tts] Chunk {i} ready | "
+                f"{elapsed:.2f}s | "
+                f"audio={audio_duration:.2f}s | "
                 f"RTF={rtf:.2f}"
             )
 
-            # Read the audio bytes and send them immediately.
-            with open(chunk_path, "rb") as f:
+            with open(
+                output_path,
+                "rb"
+            ) as f:
+
                 audio_bytes = f.read()
 
-            # Send a small header so the frontend knows how
-            # many bytes belong to this chunk, then the bytes
-            # themselves. This lets the browser split the
-            # continuous stream back into separate WAV files.
-            size_header = len(audio_bytes).to_bytes(4, "big")
+            size_header = len(
+                audio_bytes
+            ).to_bytes(
+                4,
+                "big"
+            )
 
             yield size_header
             yield audio_bytes
-        logging.info(f"TTS stream request completed | {len(sentences)} chunks sent")
-        
+
     return StreamingResponse(
         audio_chunk_generator(),
-        media_type="application/octet-stream",
+        media_type="application/octet-stream"
     )
