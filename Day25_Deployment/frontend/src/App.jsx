@@ -13,7 +13,7 @@ import "./App.css";
 // where the backend (api.py) runs with `uvicorn api:app --port 8000`.
 // See .env.example for how to point this at a different host.
 // ============================================================
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8003";
 const STORAGE_KEY = "aria_sessions_v1";
 
 function newId() {
@@ -543,8 +543,8 @@ export default function App() {
         updateAssistantMsg({ rewritten: payload.rewritten_question || null });
       }
       if (eventName === "text_chunk") {
-        pendingText += payload.text || "";
-        startRevealLoop();
+        revealedText += payload.text || "";
+        updateAssistantMsg({ text: revealedText });
       }
       if (eventName === "audio_chunk" && payload.audio) {
         const dataUrl = "data:audio/wav;base64," + payload.audio;
@@ -724,8 +724,8 @@ export default function App() {
             images = data.images || [];
             rewritten = data.rewritten_question || null;
           } else if (eventType === "text_chunk") {
-            pendingText += data.text || "";
-            startRevealLoop();
+            revealedText += data.text || "";
+            updateAssistantMsg({ text: revealedText });
           } else if (eventType === "done") {
             flushReveal();
             const finalAnswer = data.answer || revealedText;
@@ -955,3 +955,7 @@ export default function App() {
     </div>
   );
 }
+
+
+
+

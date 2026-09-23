@@ -68,7 +68,6 @@ tqdm==4.70.0
 transformers==5.15.1
 
 uvicorn==0.52.4
-uvloop==0.22.1
 watchfiles==1.2.0
 websockets==16.1.1
 
