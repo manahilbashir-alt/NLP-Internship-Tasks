@@ -1,176 +1,799 @@
-# Deployment Guide — RAG + Whisper STT + XTTS v2 TTS Stack
+# Deployment Guide — Day 25 Voice RAG Deployment
 
-## 0. Project structure
+## 1. Project Overview
 
+This project is the deployed version of the Day 23 Voice RAG application.
+
+The system includes:
+
+* Retrieval-Augmented Generation (RAG)
+* FAISS vector search
+* BM25 + dense retrieval
+* Reciprocal Rank Fusion (RRF)
+* Gemini answer generation
+* Whisper speech-to-text (STT)
+* XTTS v2 text-to-speech (TTS)
+* Voice cloning
+* Conversation/session memory
+* React frontend
+* Dockerized backend and TTS services
+
+Project location:
+
+```text
+D:\Projects\NLP-Internship-Tasks\Day25_Deployment
 ```
-.
+
+---
+
+## 2. Project Structure
+
+```text
+Day25_Deployment/
+│
 ├── backend/
-│   ├── Dockerfile              # build context = backend/
+│   ├── 01_ingestion/
+│   ├── 02_chunking/
+│   ├── 03_embeddings/
+│   ├── 04_vector_databases/
+│   ├── 05_retrieval/
+│   ├── 06_voice/
+│   ├── data/
+│   ├── evaluation/
+│   ├── .dockerignore
+│   ├── .env
+│   ├── Dockerfile
+│   ├── Dockerfile.tts
 │   ├── requirements.txt
-│   ├── .dockerignore
-│   ├── .env.example            # copy to backend/.env, fill in real values
-│   ├── cors_config_reference.py
-│   ├── scripts/
-│   │   └── warm_models.py      # runs at BUILD time, caches model weights
-│   └── app/
-│       └── main.py             # FastAPI entrypoint: /health, CORS, STT/RAG/TTS routes
+│   ├── requirements-tts.txt
+│   ├── api.py
+│   └── tts_api.py
+│
+├── backend_deployment_skeleton/
+│
 ├── frontend/
-│   ├── Dockerfile               # only used if self-hosting; skip for Vercel
-│   ├── nginx.conf
-│   ├── .dockerignore
-│   └── .env.example            # copy to frontend/.env.local (Vite) or .env (CRA)
-├── docker-compose.yml           # local full-stack test only, not the real deployment
-└── DEPLOYMENT_GUIDE.md          # this file
+│
+├── docker-compose.yml
+├── .gitignore
+└── DEPLOYMENT_GUIDE.md
 ```
 
-`app/main.py` is a working skeleton, not your finished app — it wires up
-`/health`, CORS, and model-loading-once-at-startup correctly, but the
-`/api/transcribe`, `/api/ask`, and `/api/speak` bodies are placeholders you
-replace with your actual Day 23 logic.
+### Important
 
-## 0a. Local test before deploying anywhere
+The actual Day 25 FastAPI backend entrypoint is:
 
-```bash
-cp backend/.env.example backend/.env      # fill in real values
-# add http://localhost:5173 to ALLOWED_ORIGINS in backend/.env for local testing
-cp frontend/.env.example frontend/.env.local
-
-docker compose up --build
+```text
+backend/api.py
 ```
 
-Frontend: `http://localhost:5173` · Backend: `http://localhost:8000/health`
+The TTS service entrypoint is:
 
-Once this works locally, move on to the real two-host deployment below —
-`docker-compose.yml` is not used in that deployment; each service is built
-and deployed independently.
+```text
+backend/tts_api.py
+```
 
-## 1. Architecture: two separate services
+The old `app/main.py` skeleton is **not** the deployed application.
 
-- **Frontend** → Vercel (static build + CDN) — *no Nginx needed here*.
-- **Backend** → a host that supports an **always-on container** with real RAM
-  (and ideally GPU), *not* Vercel.
+---
 
-Vercel's serverless functions are the wrong fit for the backend for two reasons:
-they cold-start per invocation (deadly with multi-GB model weights), and they
-don't hold a connection open for streaming — which this app needs for
-streamed cloned-voice audio.
+## 3. Deployment Architecture
 
-## 2. Backend host recommendation
+The final demonstration architecture is:
 
-| Option | RAM | GPU | Always-on | WebSockets/streaming | Notes |
-|---|---|---|---|---|---|
-| **Hugging Face Spaces (Docker SDK)** | 16GB free tier | T4 available (paid) | Yes | Yes — it's a persistent container behind their proxy | Must listen on port `7860` by default (configurable in Space's README metadata `app_port`). Free CPU tier is workable for demos; GPU tier recommended for near-real-time XTTS. |
-| **Oracle Cloud Free Tier VM (Ampere A1)** | up to 24GB, 4 OCPU (ARM) | No (free tier) | Yes | Yes — full control, plain Docker/uvicorn | Best if you want full control (SSH, docker-compose, your own reverse proxy/TLS). CPU-only, so expect the CPU latency notes in Section 5. |
+```text
+                    ┌──────────────────────┐
+                    │   Vercel Frontend    │
+                    │   React Application   │
+                    └──────────┬───────────┘
+                               │ HTTPS
+                               ▼
+                    ┌──────────────────────┐
+                    │ Cloudflare Quick      │
+                    │ Tunnel                │
+                    └──────────┬───────────┘
+                               │
+                               ▼
+              ┌─────────────────────────────────┐
+              │ Docker FastAPI Backend          │
+              │ Port 8000                       │
+              │ RAG + Whisper STT               │
+              └──────────────┬──────────────────┘
+                             │
+                             │ HTTP
+                             ▼
+              ┌─────────────────────────────────┐
+              │ Docker XTTS v2 TTS Service      │
+              │ Port 8004                       │
+              │ Voice cloning / synthesis       │
+              └─────────────────────────────────┘
+```
 
-**Pick HF Spaces (Docker, GPU tier)** if you want the closest-to-local-GPU
-experience and don't mind paying for the GPU hours. **Pick Oracle's free ARM
-VM** if you want a genuinely free always-on box and are fine with CPU-only
-inference (use `faster-whisper` + int8 quantization, already set up in the
-Dockerfile above, to keep CPU latency reasonable).
+### Services
 
-Either way: do not deploy this backend to Vercel, Netlify functions, AWS
-Lambda, or any other serverless platform — none of them keep a container
-warm with your models loaded, and most cap function execution/connection
-time well below what streamed TTS audio needs.
+| Service           |  Port | Purpose                         |
+| ----------------- | ----: | ------------------------------- |
+| Backend           |  8000 | FastAPI, RAG and Whisper STT    |
+| TTS               |  8004 | XTTS v2 voice synthesis         |
+| Frontend          |  5173 | Local React frontend            |
+| Vercel            | HTTPS | Deployed frontend               |
+| Cloudflare Tunnel | HTTPS | Temporary public backend access |
 
-## 3. Streaming connection type — confirm before you deploy
+---
 
-Check which one your backend actually implements:
+## 4. Why the Backend Is Not Hosted on Vercel
 
-- **WebSocket** (e.g. `@app.websocket("/ws/audio")`) — needs a host that
-  proxies WebSocket upgrades without terminating them early. Both HF Spaces
-  and a plain Oracle VM (behind Caddy/Nginx configured for `Upgrade`/
-  `Connection` headers) support this.
-- **HTTP chunked / `StreamingResponse`** — works over both hosts too, but if
-  you self-host behind Nginx on the Oracle VM, make sure
-  `proxy_buffering off;` is set on that location block, or Nginx will buffer
-  the whole response before forwarding it, defeating the point of streaming.
+The frontend is suitable for Vercel because it is a React application.
 
-Confirm this against your actual `main.py` implementation before deploying —
-if you're unsure which one your code uses, grep for `websocket` vs
-`StreamingResponse`.
+The backend contains large machine-learning models and requires a persistent process for:
 
-## 4. Deployment steps
+* Whisper STT
+* embeddings
+* vector retrieval
+* RAG processing
+* XTTS v2
+* voice cloning
+* audio processing
 
-### Backend (HF Spaces example)
-1. Create a new Space → SDK: **Docker**.
-2. Push the contents of the `backend/` folder to the Space's git remote —
-   the Space treats the repo root as the Docker build context, and
-   `backend/Dockerfile` already assumes that context, so push `backend/`'s
-   *contents* to the Space repo root (not the `backend/` folder itself nested
-   inside).
-3. Set `ALLOWED_ORIGINS`, `OPENAI_API_KEY`, etc. as **Space secrets** (not
-   committed `.env` — HF Spaces injects secrets as env vars at runtime).
-4. If port 7860 isn't what your app listens on, set `app_port: 8000` in the
-   Space's `README.md` YAML front matter, or change the Dockerfile's
-   `EXPOSE`/`CMD` port to 7860 to match the default.
-5. Wait for the build — model weights are cached during this build step
-   (`scripts/warm_models.py`), so first real request after boot is fast.
+Therefore, the FastAPI backend and TTS service run in Docker rather than as Vercel serverless functions.
 
-### Backend (Oracle Cloud VM example)
-1. SSH in, install Docker.
-2. `cd backend && docker build -t rag-backend .`
-3. `docker run -d -p 8000:8000 --env-file .env --restart unless-stopped rag-backend`
-4. Put Nginx or Caddy in front for TLS (Let's Encrypt) and to terminate
-   `https://` at your domain, forwarding to `localhost:8000` with
-   `proxy_buffering off;` for streaming routes.
+---
 
-### Frontend (Vercel)
-1. Set `VITE_API_BASE_URL` (or `REACT_APP_API_BASE_URL`) in Vercel's
-   **Project → Settings → Environment Variables** to the deployed backend's
-   real URL (e.g. `https://your-space.hf.space` or `https://api.yourdomain.com`).
-2. Deploy — Vercel handles the build and CDN; no Dockerfile needed here.
+## 5. Docker Configuration
 
-### CORS
-On the backend, set `ALLOWED_ORIGINS` to the **exact** Vercel domain
-(e.g. `https://your-app.vercel.app`), not a wildcard. This is already wired
-into `backend/app/main.py` (see also the standalone reference copy at
-`backend/cors_config_reference.py`) — it reads `ALLOWED_ORIGINS` from the
-environment and splits on commas, so multiple origins are supported as a
-comma-separated list. If Vercel generates preview-deploy URLs you also want
-to allow, add each exact preview domain to that list, or write a small
-origin-regex check for `*.vercel.app` previews specifically — but keep
-production locked to the exact domain.
+### Backend
 
-## 5. End-to-end test checklist
+The backend Dockerfile uses Python 3.11 and installs the required RAG and voice-processing dependencies.
 
-Run this against the *deployed* stack, not just locally, before calling it done:
+The backend container runs:
 
-1. **Voice input → Whisper STT**: record/upload audio in the deployed
-   frontend, confirm the transcript returned matches Day 23's local test
-   transcript for the same clip.
-2. **RAG-grounded answer**: confirm retrieved context + generated answer
-   match (or are equivalent in substance to) the local Day 23 run for the
-   same query — check it isn't silently falling back to non-grounded
-   generation (e.g. vector DB failed to load, docs path wrong on the new host).
-3. **Streamed cloned-voice audio (XTTS v2)**: confirm audio starts playing
-   incrementally rather than only after the full clip finishes generating,
-   and that the cloned voice matches the reference speaker sample.
-4. **CORS**: open browser dev tools → Network tab, confirm no CORS errors on
-   the deployed frontend talking to the deployed backend domain.
-5. **Cold start**: restart the backend container and immediately send a
-   request — it should respond promptly (proving model caching in the
-   Docker build worked) rather than hanging while it downloads weights.
+```text
+uvicorn api:app --host 0.0.0.0 --port 8000
+```
 
-### Expected latency differences: CPU (hosted) vs. local GPU (Day 23)
+Backend port:
 
-Be upfront about this in the demo so it doesn't feel "broken":
+```text
+8000
+```
 
-- **Whisper STT**: `faster-whisper` on CPU (int8) is noticeably slower than a
-  local GPU but still generally sub-few-seconds for short clips on a
-  `small` model; expect roughly 2–5x the local-GPU transcription time.
-- **XTTS v2 synthesis**: this is the biggest gap. XTTS v2 on GPU is close to
-  real-time; on CPU it can take several seconds per sentence of output audio.
-  This is the step most likely to make a CPU-hosted demo feel sluggish.
-  Mitigations: keep responses short, stream sentence-by-sentence as each
-  chunk finishes (so the user hears audio start before the whole reply is
-  synthesized), and/or pay for the HF Spaces GPU tier if the demo needs to
-  feel snappy.
-- **RAG retrieval**: embedding + vector search is comparatively cheap and
-  shouldn't differ much between CPU and GPU hosts — the LLM generation call
-  itself dominates that step's latency and depends on which provider/model
-  you're calling, not on this host's hardware.
+### TTS
 
-Net effect: transcription and retrieval should feel close to Day 23; TTS
-synthesis is where a CPU host will visibly lag behind local GPU — plan the
-demo pacing (or GPU tier) around that.
+The TTS Dockerfile contains:
+
+* Coqui TTS 0.22.0
+* XTTS v2
+* PyTorch
+* torchaudio
+* FastAPI
+* FFmpeg
+
+The TTS container runs:
+
+```text
+uvicorn tts_api:app --host 0.0.0.0 --port 8004
+```
+
+TTS port:
+
+```text
+8004
+```
+
+---
+
+## 6. Docker Compose
+
+The project uses Docker Compose to run the backend, TTS and frontend together.
+
+Start the stack:
+
+```powershell
+cd D:\Projects\NLP-Internship-Tasks\Day25_Deployment
+
+docker compose up -d
+```
+
+Check the containers:
+
+```powershell
+docker compose ps
+```
+
+Expected services:
+
+```text
+day25_deployment-backend-1
+day25_deployment-tts-1
+day25_deployment-frontend-1
+```
+
+The verified deployment had:
+
+```text
+backend    Up (healthy)    0.0.0.0:8000->8000/tcp
+tts        Up (healthy)    0.0.0.0:8004->8004/tcp
+frontend   Up              0.0.0.0:5173->80/tcp
+```
+
+---
+
+## 7. Docker Hub Images
+
+The backend and TTS images were successfully pushed to Docker Hub.
+
+Backend:
+
+```text
+manahil4502/day25-backend:latest
+```
+
+TTS:
+
+```text
+manahil4502/day25-tts:latest
+```
+
+Both images were successfully pulled back from Docker Hub and verified.
+
+The images are large because they contain machine-learning dependencies and model-related files.
+
+Approximate sizes:
+
+```text
+Backend image: 13.3 GB
+TTS image:     15.5 GB
+Frontend image: 76.6 MB
+```
+
+---
+
+## 8. Local Backend Verification
+
+The backend root endpoint can be tested with:
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:8000/ -UseBasicParsing
+```
+
+Expected response:
+
+```json
+{
+  "status": "Day 23 Voice RAG API is running"
+}
+```
+
+Swagger documentation:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+---
+
+## 9. RAG Backend Configuration
+
+The deployed backend successfully loaded the RAG pipeline.
+
+Verified configuration included approximately:
+
+```text
+FAISS vectors: 820
+Metadata records: 820
+BM25 searchable children: 820
+RRF k: 60
+Parent lookup: 271
+```
+
+The embedding/retrieval pipeline loaded successfully.
+
+---
+
+## 10. Public Backend Deployment
+
+Because a permanent card-free hosting option with sufficient resources for XTTS v2 was not used for this deployment, a Cloudflare Quick Tunnel was used to expose the Docker backend publicly.
+
+The tunnel was started with:
+
+```powershell
+cloudflared tunnel --url http://127.0.0.1:8000
+```
+
+The verified public tunnel URL was:
+
+```text
+https://moment-this-threshold-industry.trycloudflare.com
+```
+
+---
+
+## 11. Cloudflare Quick Tunnel Limitation
+
+The Cloudflare Quick Tunnel is a temporary demonstration/public-access solution.
+
+It is dependent on the local machine.
+
+The backend remains publicly accessible only while:
+
+* Docker is running
+* the FastAPI backend is running
+* the TTS service is running
+* the `cloudflared` process is running
+* the laptop is powered on
+* the laptop has an active internet connection
+
+The Quick Tunnel URL can change when a new tunnel is created.
+
+Therefore, this should be described as a **temporary demonstration deployment**, not permanent production hosting.
+
+---
+
+## 12. Public Backend Testing
+
+The public root endpoint was tested:
+
+```powershell
+Invoke-WebRequest https://moment-this-threshold-industry.trycloudflare.com/ -UseBasicParsing
+```
+
+Result:
+
+```text
+StatusCode: 200
+```
+
+Swagger was also tested:
+
+```powershell
+Invoke-WebRequest https://moment-this-threshold-industry.trycloudflare.com/docs -UseBasicParsing
+```
+
+Result:
+
+```text
+StatusCode: 200
+```
+
+This confirmed:
+
+```text
+Internet
+   ↓
+Cloudflare Quick Tunnel
+   ↓
+Docker Backend
+```
+
+was working correctly.
+
+---
+
+## 13. Public RAG API Testing
+
+An initial test using an incomplete request correctly returned HTTP 422 because the API requires:
+
+```text
+session_id
+question
+```
+
+The correct request was:
+
+```powershell
+Invoke-WebRequest `
+  https://moment-this-threshold-industry.trycloudflare.com/api/rag/chat `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body '{"session_id":"test123","question":"What is supervised learning?"}' `
+  -UseBasicParsing
+```
+
+Result:
+
+```text
+StatusCode: 200
+```
+
+The response contained a correct RAG-generated answer about supervised learning.
+
+Therefore the following complete path was verified:
+
+```text
+Public HTTPS
+      ↓
+Cloudflare Tunnel
+      ↓
+FastAPI Docker Backend
+      ↓
+RAG Retrieval
+      ↓
+Answer Generation
+```
+
+---
+
+## 14. Vercel Frontend
+
+The React frontend was successfully deployed to Vercel.
+
+Project:
+
+```text
+nlp-internship-tasks-wgql
+```
+
+Production URL:
+
+```text
+https://nlp-internship-tasks-wgql.vercel.app
+```
+
+The deployed frontend successfully communicated with the public backend.
+
+The existing working Vercel configuration was retained during final testing.
+
+---
+
+## 15. CORS Configuration
+
+The FastAPI backend contains the required CORS configuration for the deployed Vercel frontend.
+
+The production Vercel domain is included in the allowed origins.
+
+The backend should use explicit allowed origins rather than:
+
+```text
+*
+```
+
+when credentials or authenticated requests are involved.
+
+---
+
+## 16. End-to-End Voice RAG Pipeline
+
+The final application pipeline is:
+
+```text
+User speaks
+     ↓
+Browser microphone
+     ↓
+Whisper STT
+     ↓
+Transcribed question
+     ↓
+Hybrid RAG retrieval
+     ↓
+Dense retrieval + BM25
+     ↓
+RRF fusion
+     ↓
+Relevant document context
+     ↓
+Gemini answer generation
+     ↓
+XTTS v2
+     ↓
+Generated voice audio
+     ↓
+React frontend
+```
+
+---
+
+## 17. Whisper Speech-to-Text
+
+The backend uses:
+
+```text
+Whisper model: small.en
+```
+
+The deployed microphone workflow was successfully tested.
+
+Result:
+
+```text
+PASS
+```
+
+Audio from the browser was successfully processed and converted into text.
+
+---
+
+## 18. RAG Testing
+
+The RAG pipeline was manually evaluated using 11 generated questions.
+
+Topics included:
+
+1. Supervised learning
+2. Support Vector Machines
+3. Unsupervised learning
+4. Supervised vs. unsupervised learning
+5. Training sets
+6. Examples of supervised learning
+7. Classification
+8. Regression
+9. Supervised learning vs. classification
+10. Follow-up contextual question
+11. Follow-up question about the earlier difference
+
+Results:
+
+```text
+11/11 questions relevant/correct
+2/2 follow-up context tests worked
+```
+
+Example retrieved source:
+
+```text
+MACHINE LEARNING.pdf
+```
+
+Relevant pages included:
+
+```text
+17
+18
+19
+36
+54
+60
+```
+
+Two evaluation cases had incomplete page metadata, but the retrieved answers themselves were relevant.
+
+---
+
+## 19. Conversation Memory
+
+Conversation/session memory was tested through follow-up questions.
+
+Result:
+
+```text
+PASS
+```
+
+The application successfully retained previous conversation context and used it when answering follow-up questions.
+
+---
+
+## 20. XTTS v2 Text-to-Speech
+
+The TTS service uses:
+
+```text
+XTTS v2
+```
+
+The TTS service was successfully connected to the FastAPI backend through Docker networking.
+
+Inside Docker Compose, the backend communicates with:
+
+```text
+http://tts:8004/api/tts/speak-one
+```
+
+The frontend successfully received generated audio.
+
+Result:
+
+```text
+PASS
+```
+
+---
+
+## 21. Complete Manual Test Results
+
+| Test                      | Result |
+| ------------------------- | ------ |
+| Docker backend            | PASS   |
+| Docker TTS                | PASS   |
+| Docker Compose            | PASS   |
+| Docker Hub backend image  | PASS   |
+| Docker Hub TTS image      | PASS   |
+| Backend health endpoint   | PASS   |
+| Swagger                   | PASS   |
+| Cloudflare tunnel         | PASS   |
+| Public RAG endpoint       | PASS   |
+| Vercel frontend           | PASS   |
+| Text query                | PASS   |
+| Microphone input          | PASS   |
+| Whisper STT               | PASS   |
+| RAG retrieval             | PASS   |
+| Gemini answer             | PASS   |
+| XTTS v2 TTS               | PASS   |
+| Audio response            | PASS   |
+| Conversation memory       | PASS   |
+| RAG evaluation            | PASS   |
+| End-to-end voice pipeline | PASS   |
+
+---
+
+## 22. Local vs Demonstration Deployment
+
+### Local
+
+```text
+React Frontend
+      ↓
+localhost:5173
+      ↓
+Docker Backend :8000
+      ↓
+Docker TTS :8004
+```
+
+### Public Demonstration
+
+```text
+Vercel Frontend
+      ↓
+HTTPS
+      ↓
+Cloudflare Quick Tunnel
+      ↓
+Laptop Docker Backend :8000
+      ↓
+Docker TTS :8004
+```
+
+---
+
+## 23. Environment Variables
+
+Important model configuration includes:
+
+```text
+WHISPER_MODEL_NAME=small.en
+
+XTTS_MODEL_NAME=tts_models/multilingual/multi-dataset/xtts_v2
+
+EMBEDDING_MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+```
+
+Docker Compose configures the internal TTS service using:
+
+```text
+TTS_SERVICE_URL=http://tts:8004/api/tts/speak-one
+```
+
+API keys and other secrets must remain in `.env` and must not be committed to GitHub.
+
+---
+
+## 24. Performance Notes
+
+The current demonstration uses CPU-based Docker inference.
+
+Expected behavior:
+
+* RAG retrieval is comparatively lightweight.
+* Whisper CPU inference is slower than GPU inference.
+* XTTS v2 is the most computationally expensive component.
+* Shorter responses provide a better voice-demo experience.
+
+The complete voice pipeline was successfully tested despite CPU-based inference.
+
+---
+
+## 25. Troubleshooting
+
+### Check Docker containers
+
+```powershell
+docker compose ps
+```
+
+### Start Docker services
+
+```powershell
+docker compose up -d
+```
+
+### View backend logs
+
+```powershell
+docker compose logs backend --tail 100
+```
+
+### View TTS logs
+
+```powershell
+docker compose logs tts --tail 100
+```
+
+### Restart services
+
+```powershell
+docker compose restart
+```
+
+### Check Docker installation
+
+```powershell
+docker version
+```
+
+### Test backend locally
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:8000/ -UseBasicParsing
+```
+
+### Test the public tunnel
+
+```powershell
+Invoke-WebRequest https://YOUR-TUNNEL.trycloudflare.com/ -UseBasicParsing
+```
+
+If the public URL stops working, verify:
+
+1. Docker containers are running.
+2. Backend port `8000` is available.
+3. TTS container is running.
+4. The `cloudflared` terminal is still running.
+5. The laptop has internet access.
+
+---
+
+## 26. Final Run Commands
+
+From the Day 25 directory:
+
+```powershell
+cd D:\Projects\NLP-Internship-Tasks\Day25_Deployment
+```
+
+Start Docker:
+
+```powershell
+docker compose up -d
+```
+
+Check services:
+
+```powershell
+docker compose ps
+```
+
+Start the public tunnel in a separate terminal:
+
+```powershell
+cloudflared tunnel --url http://127.0.0.1:8000
+```
+
+Keep the Cloudflare terminal open while demonstrating the application.
+
+---
+
+## 27. Final Deployment Status
+
+The Day 25 deployment has been successfully verified across the complete pipeline:
+
+```text
+Vercel
+   ↓
+Cloudflare Quick Tunnel
+   ↓
+Docker FastAPI Backend
+   ↓
+Whisper STT
+   ↓
+RAG Retrieval
+   ↓
+Gemini
+   ↓
+XTTS v2
+   ↓
+Audio Response
+```
+
+The Dockerized backend, TTS service, public API, Vercel frontend, voice input, RAG retrieval, conversation memory and audio response were all tested successfully.
+
+The only deployment limitation is that the current public backend uses a **temporary Cloudflare Quick Tunnel** rather than permanent cloud hosting. The application itself is fully functional and the end-to-end demonstration has been verified.

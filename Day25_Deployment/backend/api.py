@@ -186,7 +186,13 @@ app = FastAPI(
 # ============================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "https://nlp-internship-tasks-1mq6-i2bhw6cnl-tech-5fac.vercel.app"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://nlp-internship-tasks-wgql.vercel.app",
+        "https://nlp-internship-tasks-wgql-git-main-tech-5fac.vercel.app",
+        "https://nlp-internship-tasks-wgql-h6qz9i3f3-tech-5fac.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
